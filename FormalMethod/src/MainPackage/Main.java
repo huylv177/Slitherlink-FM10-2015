@@ -20,10 +20,21 @@ public class Main {
 	MyPanel myCanvas;
 	ArrayList<JButton> buttons;
 	final static int NUM_OF_BUTTON = 3;
+	
+	//kich thuoc theo pixel
+	int CANVAS_HEIGHT;
+	int CANVAS_WIDTH;
+	
+	//kich thuoc man choi
 	int HEIGHT = 5;
 	int WIDTH = 5;
+	
+	//kich thuoc moi o
 	final static int SIZE_BOX = 50;
+	
+	//num[i][j] la so cua o (i,j)
 	int[][] num;
+	//m[i][j][k] la gia tri cua net ve tai o (j,k), i=0 la canh tren, i=1 la canh trai 
 	int[][][] m;
 
 	public static void main(String args[]) {
@@ -32,7 +43,7 @@ public class Main {
 
 	Main() {
 
-		// doc file
+		// doc file 
 		Path filePath = Paths.get("thao.txt");
 		Scanner scanner = null;
 		try {
@@ -58,8 +69,8 @@ public class Main {
 			e.printStackTrace();
 		}
 
-		int CANVAS_HEIGHT = (HEIGHT + 2) * SIZE_BOX;
-		int CANVAS_WIDTH = (WIDTH + 2) * SIZE_BOX;
+		CANVAS_HEIGHT = (HEIGHT + 2) * SIZE_BOX;
+		CANVAS_WIDTH = (WIDTH + 2) * SIZE_BOX;
 
 		myCanvas = new MyPanel(WIDTH, HEIGHT, num);
 		myCanvas.setBounds(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -101,6 +112,15 @@ public class Main {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				for(int i=0;i<WIDTH+1;i++){
+					for(int j=0;j<HEIGHT;j++){
+						myCanvas.getMainArray()[0][i][j]=false;
+						myCanvas.getMainArray()[1][i][j]=false;
+					}
+					
+				}
+				
+				myCanvas.repaint();
 			}
 		});
 		buttons.get(2).addActionListener(new ActionListener() {

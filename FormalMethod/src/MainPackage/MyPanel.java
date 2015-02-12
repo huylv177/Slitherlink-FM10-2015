@@ -13,18 +13,20 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 
 public class MyPanel extends JPanel implements MouseListener {
-	int numx;
-	int numy;
+	//numx la so cot, numy la so hang
+	int numx, numy;
+	
+	//tuong tu class Main
 	boolean[][][] m;
 	final static int SIZE_BOX = 40;
 	int[][] num;
-	String c1, c2, c3;
+
+	//cp la mang luu toa do cac trung diem cac canh trong game
+	//(cp[i][0],cp[i][1]) la toa do cua canh (cp[i][2],cp[i][3],cp[i][4])
 	int[][] cp;
-	ArrayList<String> retur;
 	
 	public MyPanel(int numx, int numy, int[][] num) {
 		this.num = num;
-		// m la mang 3 chieu, gia tri dau tien: 0->cac net ngang;1->cac net doc
 		m = new boolean[2][numx + 1][numy + 1];
 
 		this.numx = numx;
@@ -47,6 +49,7 @@ public class MyPanel extends JPanel implements MouseListener {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
+		//ve cac diem 
 		for (int i = 0; i < numx + 1; i++) {
 			for (int j = 0; j < numy + 1; j++) {
 				g.fillOval(((i + 1) * SIZE_BOX) - 4, ((j + 1) * SIZE_BOX) - 4,
@@ -54,6 +57,7 @@ public class MyPanel extends JPanel implements MouseListener {
 			}
 		}
 
+		//ve cac so trong cac o
 		Font f = new Font("Arial", Font.PLAIN, 30);
 		g.setFont(f);
 		for (int i = 0; i < numx; i++) {
@@ -68,6 +72,8 @@ public class MyPanel extends JPanel implements MouseListener {
 			}
 		}
 
+		//noi 2 diem voi nhau neu gia tri tai do = true
+		//ham nay hoi bi hai nao :v
 		for(int i=0;i<2;i++){
 			for(int j=0;j<numx+1;j++){
 				for(int k=0;k<numy+1;k++){
@@ -125,7 +131,7 @@ public class MyPanel extends JPanel implements MouseListener {
 
 	}
 
-
+	//khoi tao cac gia tri cho mang cp
 	void genClickPoint() {
 		cp = new int[2 * numx * numy + numx + numy][5];
 
@@ -163,6 +169,7 @@ public class MyPanel extends JPanel implements MouseListener {
 		}
 	}
 	
+	//ko can quan tam ham nay dau :3
 	void getstr(int x,int y,int[][] cp){
 		for (int i = 0; i < 2 * numx * numy + numx + numy; i++) {
 			if ((Math.abs(x - cp[i][0]) < 10) && (Math.abs(y - cp[i][1]) < 10)) {
