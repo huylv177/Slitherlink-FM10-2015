@@ -12,8 +12,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-//import statements
-//Check if window closes automatically. Otherwise add suitable code
 public class Main {
 	JFrame myFrame;
 	static JLabel myLabel;
@@ -26,16 +24,19 @@ public class Main {
 	int CANVAS_WIDTH;
 	
 	//kich thuoc man choi
-	int HEIGHT = 5;
+	int HEIGHT = 3;
 	int WIDTH = 5;
 	
 	//kich thuoc moi o
 	final static int SIZE_BOX = 50;
 	
-	//num[i][j] la so cua o (i,j)
-	int[][] num;
+	//val[i][j] la so cua o (i,j)
+	int[][] val;
 	//m[i][j][k] la gia tri cua net ve tai o (j,k), i=0 la canh tren, i=1 la canh trai 
-	int[][][] m;
+//	int[][][] m;
+	
+	boolean[][] row;
+	boolean[][] col;
 
 	public static void main(String args[]) {
 		new Main();
@@ -44,22 +45,24 @@ public class Main {
 	Main() {
 
 		// doc file 
-		Path filePath = Paths.get("thao.txt");
+		Path filePath = Paths.get("input/55/thao.txt");
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(filePath);
 			int i = 0, j = 0;
-			WIDTH = scanner.nextInt();
-			HEIGHT = scanner.nextInt();
-			num = new int[WIDTH][HEIGHT];
+			HEIGHT = scanner.nextInt(); //3
+			WIDTH = scanner.nextInt(); //5
+			val = new int[HEIGHT][WIDTH];
 			while (scanner.hasNext()) {
 				if (scanner.hasNextInt()) {
 					int q = scanner.nextInt();
 					if (j >= WIDTH) {
 						i++;
 						j = 0;
+//						System.out.println("\n");
 					}
-					num[i][j] = q;
+					val[i][j] = q;
+//					System.out.println(q+" ");
 					j++;
 				} else {
 					scanner.next();
@@ -72,7 +75,7 @@ public class Main {
 		CANVAS_HEIGHT = (HEIGHT + 2) * SIZE_BOX;
 		CANVAS_WIDTH = (WIDTH + 2) * SIZE_BOX;
 
-		myCanvas = new MyPanel(WIDTH, HEIGHT, num);
+		myCanvas = new MyPanel(WIDTH, HEIGHT, val);
 		myCanvas.setBounds(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
 		myLabel = new JLabel("2");
@@ -112,19 +115,16 @@ public class Main {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				for(int i=0;i<WIDTH+1;i++){
-					for(int j=0;j<HEIGHT;j++){
-						myCanvas.getMainArray()[0][i][j]=false;
-						myCanvas.getMainArray()[1][i][j]=false;
-					}
-					
-				}
-				
-				myCanvas.repaint();
+//				for(int i=0;i<WIDTH+1;i++){
+//					for(int j=0;j<HEIGHT;j++){
+//						myCanvas.getMainArray()[0][i][j]=false;
+//						myCanvas.getMainArray()[1][i][j]=false;
+//					}
+//				}
+//				myCanvas.repaint();
 			}
 		});
 		buttons.get(2).addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
