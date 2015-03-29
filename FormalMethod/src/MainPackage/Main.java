@@ -1,7 +1,11 @@
 package MainPackage;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,21 +15,24 @@ import java.util.Scanner;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 
 public class Main {
 	JFrame myFrame;
 	static JLabel myLabel;
 	MyPanel myCanvas;
 	ArrayList<JButton> buttons;
-	final static int NUM_OF_BUTTON = 3;
+	final static int NUM_OF_BUTTON = 4;
 	
 	//kich thuoc theo pixel
 	int CANVAS_HEIGHT;
 	int CANVAS_WIDTH;
 	
 	//kich thuoc man choi
-	int HEIGHT = 3;
-	int WIDTH = 5;
+	static int HEIGHT;
+	static int WIDTH;
 	
 	//kich thuoc moi o
 	final static int SIZE_BOX = 50;
@@ -38,6 +45,10 @@ public class Main {
 	boolean[][] row;
 	boolean[][] col;
 
+	JPanel tab1,tab2,panelCanvas;
+	JTabbedPane tabbedPane;
+	JScrollPane scroolPane;
+	
 	public static void main(String args[]) {
 		new Main();
 	}
@@ -75,9 +86,18 @@ public class Main {
 		CANVAS_HEIGHT = (HEIGHT + 2) * SIZE_BOX;
 		CANVAS_WIDTH = (WIDTH + 2) * SIZE_BOX;
 
+		scroolPane = new JScrollPane();
+		tabbedPane = new JTabbedPane();
+	    tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+	    
+	    tab1 = new JPanel();
+	    tab2 = new JPanel();
+	    panelCanvas = new JPanel();
 		myCanvas = new MyPanel(WIDTH, HEIGHT, val);
-		myCanvas.setBounds(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
+//		myCanvas.setBounds(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+		tabbedPane.add("Game", tab1);
+		tabbedPane.add("MiniSat",tab2);
+		
 		myLabel = new JLabel("2");
 		myLabel.setBounds(CANVAS_WIDTH + 50, 10, 200, 50);
 
@@ -88,46 +108,104 @@ public class Main {
 		buttons.get(0).setText("Check");
 		buttons.get(1).setText("Clear");
 		buttons.get(2).setText("New Puzzle");
+		buttons.get(3).setText("Solve");
 		buttons.get(0).setBounds(CANVAS_WIDTH + 50, 50, 100, 40);
 		buttons.get(1).setBounds(CANVAS_WIDTH + 50, 100, 100, 40);
 		buttons.get(2).setBounds(CANVAS_WIDTH + 50, 150, 100, 40);
+		buttons.get(3).setBounds(CANVAS_WIDTH + 50, 200, 100, 40);
 
 		myFrame = new JFrame();
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		myFrame.setLayout(null);
 		myFrame.setSize(CANVAS_WIDTH + 300, CANVAS_HEIGHT + 50);
-		myFrame.add(myCanvas);
+//		myFrame.add(myCanvas);
 		myFrame.setLocationRelativeTo(null);
 		myFrame.setVisible(true);
 		for (int i = 0; i < NUM_OF_BUTTON; i++) {
-			myFrame.add(buttons.get(i));
+			tab1.add(buttons.get(i));
 		}
-		myFrame.add(myLabel);
-
-		buttons.get(0).addActionListener(new ActionListener() {
+		tab1.add(myLabel);
+		myFrame.add(tabbedPane);
+		tabbedPane.setBounds(0,0,myFrame.getWidth()-15, myFrame.getHeight()-38);
+	    
+	    
+	    myCanvas.setBounds(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+	    tab1.setLayout(null);
+	    tab1.add(panelCanvas);
+	    panelCanvas.setLayout(new BorderLayout());
+//	    panelCanvas.add(myCanvas);
+	    panelCanvas.setBounds(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT-15);
+//	    tab1.add(myCanvas,BorderLayout.CENTER);
+//	    panelCanvas.add(hbar, BorderLayout.SOUTH);
+//	    panelCanvas.add(vbar, BorderLayout.EAST);
+		scroolPane.getViewport().add(myCanvas);
+		panelCanvas.add(scroolPane,BorderLayout.CENTER);
+		
+		myFrame.addComponentListener(new ComponentListener() {
+			@Override
+			public void componentResized(ComponentEvent arg0) {
+				Component c = (Component)arg0.getSource();
+				tabbedPane.setBounds(0,0,c.getWidth()-15, c.getHeight()-38);
+			}
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void componentHidden(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
 
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentShown(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		buttons.get(0).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 			}
 		});
 		buttons.get(1).addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				for(int i=0;i<WIDTH+1;i++){
-//					for(int j=0;j<HEIGHT;j++){
-//						myCanvas.getMainArray()[0][i][j]=false;
-//						myCanvas.getMainArray()[1][i][j]=false;
-//					}
-//				}
-//				myCanvas.repaint();
+				for(int i=0;i<HEIGHT+1;i++){
+					for(int j=0;j<WIDTH;j++){
+						myCanvas.getRowArr()[i][j]=false;
+					}
+				}
+				for(int i=0;i<HEIGHT;i++){
+					for(int j=0;j<WIDTH+1;j++){
+						myCanvas.getColArr()[i][j]=false;
+					}
+				}
+				myCanvas.repaint();
 			}
 		});
 		buttons.get(2).addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 
+			}
+		});
+		buttons.get(3).addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WriteInput writeInput = new WriteInput(val);
+				SatSolver satSolver= new SatSolver();
+				String[] a=satSolver.getString().split(" ");
+				ArrayList<Integer> b = new ArrayList<Integer>();
+				for(int i=0;i<a.length;i++){
+					b.add(Integer.parseInt(a[i]));
+				}
+				for(int i=0;i<b.size();i++){
+					
+				}
 			}
 		});
 	}

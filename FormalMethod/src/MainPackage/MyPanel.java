@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -41,14 +42,9 @@ public class MyPanel extends JPanel implements MouseListener {
 		setBackground(new Color(222, 222, 222));
 		addMouseListener(this);
 
-//		m = new boolean[2][w + 1][h + 1];
-
 		genClickPoint();
 	}
-
-//	boolean[][][] getMainArray(){
-//		return this.m;
-//	}
+	
 	boolean[][] getRowArr(){
 		return row;
 	}
