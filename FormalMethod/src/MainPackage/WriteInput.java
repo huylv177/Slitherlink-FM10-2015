@@ -17,14 +17,14 @@ public class WriteInput {
 
 //		System.out.print(stringEncoded);
 		try {
-			File file = new File("input/cnf/satinput.cnf");
+			File file = new File("input/cnf/input.cnf");
 			if (!file.exists()) {
 				file.createNewFile();
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
 			
-			bw.write("p cnf "+(2*w*h+w+h)+" "+stringEncoded.size());
+			bw.write("p cnf "+(4*w*h+2*w+2*h)+" "+stringEncoded.size());
 			bw.newLine();
 			
 			for(int i=0;i<stringEncoded.size();i++){

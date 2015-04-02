@@ -43,8 +43,7 @@ public class Main {
 	// canh trai
 	// int[][][] m;
 
-	boolean[][] row;
-	boolean[][] col;
+	boolean[][] rowLeft, rowRight, colUp, colDown;
 
 	JPanel tab1, tab2, panelCanvas;
 	JTabbedPane tabbedPane;
@@ -57,7 +56,7 @@ public class Main {
 	Main() {
 
 		// doc file
-		Path filePath = Paths.get("input/55/thao.txt");
+		Path filePath = Paths.get("input/55/1.txt");
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(filePath);
@@ -180,12 +179,14 @@ public class Main {
 			public void actionPerformed(ActionEvent e) {
 				for (int i = 0; i < HEIGHT + 1; i++) {
 					for (int j = 0; j < WIDTH; j++) {
-						myCanvas.getRowArr()[i][j] = false;
+						myCanvas.getRowLeftArr()[i][j] = false;
+						myCanvas.getRowRightArr()[i][j] = false;
 					}
 				}
 				for (int i = 0; i < HEIGHT; i++) {
 					for (int j = 0; j < WIDTH + 1; j++) {
-						myCanvas.getColArr()[i][j] = false;
+						myCanvas.getColUpArr()[i][j] = false;
+						myCanvas.getColDownArr()[i][j] = false;
 					}
 				}
 				myCanvas.repaint();
@@ -202,22 +203,27 @@ public class Main {
 				SatSolver satSolver = new SatSolver();
 				String[] a = satSolver.getString().split(" ");
 				ArrayList<Integer> b = new ArrayList<Integer>();
-				for (int i = 0; i < a.length-1; i++) {
-						b.add(Integer.parseInt(a[i]));
+				for (int i = 0; i < a.length - 1; i++) {
+					b.add(Integer.parseInt(a[i]));
 				}
-				
-				 for(int i=0;i<b.size();i++){
-					 int edgeCode = Math.abs(b.get(i));
-						if (b.get(i) == edgeCode) {
-							if (e(edgeCode)[2] == 0) {
-//								System.out.println(edgeCode+" " +e(edgeCode)[0]+" "+e(edgeCode)[1]);
-								myCanvas.getRowArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
-							}else if(e(edgeCode)[2]==1){
-//								System.out.println(edgeCode+" " +e(edgeCode)[0]+" "+e(edgeCode)[1]);
-								myCanvas.getColArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
-							}
+
+				for (int i = 0; i < b.size(); i++) {
+					int edgeCode = Math.abs(b.get(i));
+					if (b.get(i) == edgeCode) {
+						if (e(edgeCode)[2] == 0) {
+//							 System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
+							myCanvas.getRowRightArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
+						} else if (e(edgeCode)[2] == 1) {
+//							 System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
+							myCanvas.getColDownArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
+						} else if(e(edgeCode)[2]==3){
+							System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
+							myCanvas.getRowLeftArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
+						} else if(e(edgeCode)[2]==4){
+							myCanvas.getColUpArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
 						}
-				 }
+					}
+				}
 				myCanvas.repaint();
 			}
 		});
@@ -225,15 +231,28 @@ public class Main {
 
 	int[] e(int edgeCode) {
 		int[] e = new int[3];
-		int d = WIDTH * (HEIGHT + 1);
-		if (edgeCode < d) {
-			e[1] = edgeCode % WIDTH-1;
-			e[0] = (edgeCode - e[1]) / WIDTH ;
-			e[2] = 0;
+		int d = WIDTH * (HEIGHT + 1) + (WIDTH + 1) * HEIGHT;
+		int k = WIDTH * (HEIGHT + 1);
+		if (edgeCode <= d) {
+			if (edgeCode <= k) {
+				e[1] = (edgeCode-1) % WIDTH ;
+				e[0] = (edgeCode - e[1]) / WIDTH;
+				e[2] = 0;
+			} else {
+				e[1] = (edgeCode - k-1) % (WIDTH+1);
+				e[0] = (edgeCode - k - e[1]) / (WIDTH+1);
+				e[2] = 1;
+			}
 		} else {
-			e[1] = (edgeCode - d) % WIDTH-1;
-			e[0] = (edgeCode -d -e[1]) / WIDTH ;
-			e[2] = 1;
+			if ((edgeCode - d) <= k) {
+				e[1] = (edgeCode - d-1) % WIDTH ;
+				e[0] = (edgeCode - d - e[1]) / WIDTH;
+				e[2] = 2;
+			} else {
+				e[1] = (edgeCode - d - k-1) % (WIDTH+1);
+				e[0] = (edgeCode - d - k - e[1]) / (WIDTH+1);
+				e[2] = 3;
+			}
 		}
 		return e;
 	}

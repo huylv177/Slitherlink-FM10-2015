@@ -18,7 +18,7 @@ public class MyPanel extends JPanel implements MouseListener {
 	
 	//tuong tu class Main
 	//boolean[][][] m;
-	boolean[][] row,col;
+	boolean[][] rowRight,rowLeft,colUp,colDown;
 	int[][] val;
 	
 	int SIZE_BOX;
@@ -30,12 +30,15 @@ public class MyPanel extends JPanel implements MouseListener {
 	
 	public MyPanel(int w, int h, int[][] val) {
 		this.val = val;
-//s		m = new boolean[2][w + 1][h + 1];
-		row = new boolean[h+1][w];
-		col = new boolean[h][w+1];
-		
 		this.w = w;
 		this.h = h;
+		
+		rowLeft = new boolean[h+1][w];
+		rowRight= new boolean[h+1][w];
+		colUp   = new boolean[h][w+1];
+		colDown = new boolean[h][w+1];
+		
+		
 		SIZE_BOX=Main.SIZE_BOX;
 		
 		setPreferredSize(null);
@@ -45,11 +48,17 @@ public class MyPanel extends JPanel implements MouseListener {
 		genClickPoint();
 	}
 	
-	boolean[][] getRowArr(){
-		return row;
+	boolean[][] getRowLeftArr(){
+		return rowLeft;
 	}
-	boolean[][] getColArr(){
-		return col;
+	boolean[][] getRowRightArr(){
+		return rowLeft;
+	}
+	boolean[][] getColUpArr(){
+		return colUp;
+	}
+	boolean[][] getColDownArr(){
+		return colDown;
 	}
 	
 	@Override
@@ -79,10 +88,11 @@ public class MyPanel extends JPanel implements MouseListener {
 			}
 		}
 
+		//ve doan thang noi cac dinh
 		int x1,x2,y1,y2;
 		for(int i=0;i<h+1;i++){
 			for(int j=0;j<w;j++){
-				if(row[i][j]){
+				if(rowLeft[i][j] || rowRight[i][j]){
 					x1=SIZE_BOX*(1+j);
 					y1=SIZE_BOX*(1+i);
 					x2=x1+SIZE_BOX;
@@ -96,7 +106,7 @@ public class MyPanel extends JPanel implements MouseListener {
 		}
 		for(int i=0;i<h;i++){
 			for(int j=0;j<w+1;j++){
-				if(col[i][j]){
+				if(colUp[i][j] || colDown[i][j]){
 					x1=SIZE_BOX*(1+j);
 					y1=SIZE_BOX*(1+i);
 					x2=x1;
@@ -111,20 +121,20 @@ public class MyPanel extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		int x = e.getX();
-		int y = e.getY();
-		for(int i=0;i<2*w*h+w+h;i++){
-			if ((Math.abs(x - cp[i][0]) < SIZE_BOX/4) && (Math.abs(y - cp[i][1]) < SIZE_BOX/4)) {
-				if(cp[i][2]==0){
-			//		System.out.println(cp[i][3]+" "+cp[i][4]);
-					row[cp[i][3]][cp[i][4]]=!row[cp[i][3]][cp[i][4]];
-				}
-				else if(cp[i][2]==1){
-					
-					col[cp[i][3]][cp[i][4]]=!col[cp[i][3]][cp[i][4]];
-				}
-			}
-		}
+//		int x = e.getX();
+//		int y = e.getY();
+//		for(int i=0;i<2*w*h+w+h;i++){
+//			if ((Math.abs(x - cp[i][0]) < SIZE_BOX/4) && (Math.abs(y - cp[i][1]) < SIZE_BOX/4)) {
+//				if(cp[i][2]==0){
+//			//		System.out.println(cp[i][3]+" "+cp[i][4]);
+//					row[cp[i][3]][cp[i][4]]=!row[cp[i][3]][cp[i][4]];
+//				}
+//				else if(cp[i][2]==1){
+//					
+//					col[cp[i][3]][cp[i][4]]=!col[cp[i][3]][cp[i][4]];
+//				}
+//			}
+//		}
 		
 //		for(int i=0;i<h+1;i++){
 //			for(int j=0;j<w;j++){

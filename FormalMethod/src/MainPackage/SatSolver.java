@@ -1,4 +1,4 @@
-package MainPackage;
+   package MainPackage;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,11 +23,11 @@ public class SatSolver {
         Reader reader = new DimacsReader(solver);
         // CNF filename is given on the command line 
         try {
-            IProblem problem = reader.parseInstance("input/cnf/satinput.cnf");
+            IProblem problem = reader.parseInstance("input/cnf/input.cnf");
             if (problem.isSatisfiable()) {
                 System.out.println("Satisfiable !");
                 stringDecoded=reader.decode(problem.model());
-                PrintWriter pw = new PrintWriter("input/cnf/out.cnf");
+                PrintWriter pw = new PrintWriter("input/cnf/output.cnf");
                 reader.decode(problem.model(), pw);
                 pw.close();
             } else {
