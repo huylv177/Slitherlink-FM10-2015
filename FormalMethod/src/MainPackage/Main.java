@@ -19,12 +19,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+
 public class Main {
 	JFrame myFrame;
 	static JLabel myLabel;
 	MyPanel myCanvas;
 	ArrayList<JButton> buttons;
-	final static int NUM_OF_BUTTON = 4;
+	final static int NUM_OF_BUTTON = 5;
 
 	// kich thuoc theo pixel
 	int CANVAS_HEIGHT;
@@ -49,6 +50,13 @@ public class Main {
 	JTabbedPane tabbedPane;
 	JScrollPane scroolPane;
 
+	
+	///////////////////
+	WriteInput writeInput;
+	SatSolver satSolver;
+	String fInput="input/cnf/input.cnf";
+	////////////////////
+	
 	public static void main(String args[]) {
 		new Main();
 	}
@@ -109,10 +117,12 @@ public class Main {
 		buttons.get(1).setText("Clear");
 		buttons.get(2).setText("New Puzzle");
 		buttons.get(3).setText("Solve");
+		buttons.get(4).setText("Find another output");
 		buttons.get(0).setBounds(CANVAS_WIDTH + 50, 50, 100, 40);
 		buttons.get(1).setBounds(CANVAS_WIDTH + 50, 100, 100, 40);
 		buttons.get(2).setBounds(CANVAS_WIDTH + 50, 150, 100, 40);
 		buttons.get(3).setBounds(CANVAS_WIDTH + 50, 200, 100, 40);
+		buttons.get(4).setBounds(CANVAS_WIDTH + 50, 250, 100, 40);
 
 		myFrame = new JFrame();
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -199,8 +209,9 @@ public class Main {
 		});
 		buttons.get(3).addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				WriteInput writeInput = new WriteInput(val);
-				SatSolver satSolver = new SatSolver();
+				writeInput = new WriteInput(val);
+				writeInput.write(fInput);
+				satSolver = new SatSolver();
 				String[] a = satSolver.getString().split(" ");
 				ArrayList<Integer> b = new ArrayList<Integer>();
 				for (int i = 0; i < a.length - 1; i++) {
@@ -210,21 +221,37 @@ public class Main {
 				for (int i = 0; i < b.size(); i++) {
 					int edgeCode = Math.abs(b.get(i));
 					if (b.get(i) == edgeCode) {
+						
+//						if(edgeCode==36) System.out.println(e(edgeCode)[0] +" "+ e(edgeCode)[1]);
+						
 						if (e(edgeCode)[2] == 0) {
 //							 System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
 							myCanvas.getRowRightArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
 						} else if (e(edgeCode)[2] == 1) {
 //							 System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
 							myCanvas.getColDownArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
-						} else if(e(edgeCode)[2]==3){
-							System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
-							myCanvas.getRowLeftArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
-						} else if(e(edgeCode)[2]==4){
-							myCanvas.getColUpArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
-						}
+						} 
 					}
 				}
 				myCanvas.repaint();
+			}
+		});
+		buttons.get(4).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				String[] a = satSolver.getString().split(" ");
+				ArrayList<Integer> b = new ArrayList<Integer>();
+				for (int i = 0; i < a.length - 1; i++) {
+					Integer temp=Integer.parseInt(a[i]);
+					b.add(-temp);
+				}
+				
+				for(int i=0;i<b.size();i++){
+					
+					System.out.print(b+" ");
+				}
+//				writeInput.addFoundOutput(b);
 			}
 		});
 	}
@@ -233,6 +260,34 @@ public class Main {
 		int[] e = new int[3];
 		int d = WIDTH * (HEIGHT + 1) + (WIDTH + 1) * HEIGHT;
 		int k = WIDTH * (HEIGHT + 1);
+		
+		if(edgeCode>d){
+			edgeCode -= d;
+		}
+		if(edgeCode <= k){
+			if(edgeCode % HEIGHT == 0){
+				e[0] = edgeCode/HEIGHT-1 ;
+				e[1] = HEIGHT - 1;
+				e[2] = 0;
+			}else{
+				e[0] = edgeCode/HEIGHT;
+				e[1] = edgeCode%HEIGHT -1;
+				e[2] = 0;
+			}
+		}else{
+			edgeCode = edgeCode - k;
+			if((edgeCode%(HEIGHT+1))==0){
+				e[0] = edgeCode/(HEIGHT+1) - 1;
+				e[1] = HEIGHT;
+				e[2] = 1;
+			}else{
+				e[0] = edgeCode/(HEIGHT+1);
+				e[1] = edgeCode%(HEIGHT+1) - 1;
+				e[2] = 1;
+			}
+		}
+		
+		/*
 		if (edgeCode <= d) {
 			if (edgeCode <= k) {
 				e[1] = (edgeCode-1) % WIDTH ;
@@ -254,6 +309,7 @@ public class Main {
 				e[2] = 3;
 			}
 		}
+		*/
 		return e;
 	}
 

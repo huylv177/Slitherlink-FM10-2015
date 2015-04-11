@@ -7,17 +7,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class WriteInput {
-	ArrayList<String> stringEncoded;
+	private ArrayList<String> stringEncoded;
+	private SatEncode satEncode;
+	private int w;
+	private int h;
 	WriteInput(int[][] val){
-		int w= Main.WIDTH;
-		int h= Main.HEIGHT;
-		SatEncode satEncode = new SatEncode(val);
+		w= Main.WIDTH;
+		h= Main.HEIGHT;
+		satEncode = new SatEncode(val);
 		satEncode.encode();
 		stringEncoded = satEncode.getTextEncoded();
-
+	}
+	void write(String fPath){
 //		System.out.print(stringEncoded);
 		try {
-			File file = new File("input/cnf/input.cnf");
+			File file = new File(fPath);
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -39,4 +43,8 @@ public class WriteInput {
 			e.printStackTrace();
 		}
 	}
+	void addFoundOutput(){
+		
+	}
+	
 }

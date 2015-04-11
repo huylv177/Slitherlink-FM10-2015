@@ -182,22 +182,24 @@ public class SatEncode {
 		}
 		for(int i=0;i<w+1;i++){
 			for(int j=0;j<h+1;j++){
-				System.out.println(e1(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e4(i,j)+ " "+e5(i,j)+" "+e6(i,j)+" "+e7(i,j)+" "+e8(i,j));
+//				if(i==5 && j==5){
+//				text.add("-----------------------------");
+//				System.out.println(e1(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e4(i,j)+ " "+e5(i,j)+" "+e6(i,j)+" "+e7(i,j)+" "+e8(i,j));
 				//moi dinh co nhieu nhat 1 duong di vao
-				if(e1(i,j) != -1 && e2(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e2(i,j));
-				if(e1(i,j) != -1 && e3(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e3(i,j));
 				if(e1(i,j) != -1 && e4(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e4(i,j));
-				if(e2(i,j) != -1 && e3(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e3(i,j));
-				if(e2(i,j) != -1 && e4(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e4(i,j));
-				if(e3(i,j) != -1 && e4(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e4(i,j));
+				if(e1(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e6(i,j));
+				if(e1(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e7(i,j));
+				if(e4(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e4(i,j)+" -"+e6(i,j));
+				if(e4(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e4(i,j)+" -"+e7(i,j));
+				if(e6(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e6(i,j)+" -"+e7(i,j));
 				
 				//moi dinh co nhieu nhat 1 duong di ra
-				if(e5(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e5(i,j)+" -"+e6(i,j));
-				if(e5(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e5(i,j)+" -"+e7(i,j));
+				if(e2(i,j) != -1 && e3(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e3(i,j));
+				if(e2(i,j) != -1 && e5(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e5(i,j));
+				if(e2(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e8(i,j));
+				if(e3(i,j) != -1 && e5(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e5(i,j));
+				if(e3(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e8(i,j));
 				if(e5(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e5(i,j)+" -"+e8(i,j));
-				if(e6(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e6(i,j)+" -"+e7(i,j));
-				if(e6(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e6(i,j)+" -"+e8(i,j));
-				if(e7(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e7(i,j)+" -"+e8(i,j));
 				
 				//duong vao cua 1 dinh ko la duong ra cua chinh no
 				if(e1(i,j) != -1 && e5(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e5(i,j));
@@ -206,11 +208,12 @@ public class SatEncode {
 				if(e4(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e4(i,j)+" -"+e8(i,j));
 				
 				//duong vao la 1 canh va duong ra o 3 canh kia
-				if(e1(i,j) != -1 && e6(i,j)!=-1 && e7(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e1(i,j)+" "+e6(i,j)+" "+e7(i,j)+" "+e8(i,j));
-				if(e2(i,j) != -1 && e5(i,j)!=-1 && e7(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e2(i,j)+" "+e5(i,j)+" "+e7(i,j)+" "+e8(i,j));
-				if(e3(i,j) != -1 && e5(i,j)!=-1 && e6(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e3(i,j)+" "+e5(i,j)+" "+e6(i,j)+" "+e8(i,j));
-				if(e4(i,j) != -1 && e5(i,j)!=-1 && e6(i,j)!=-1 && e7(i,j)!=-1)	text.add("-"+e4(i,j)+" "+e5(i,j)+" "+e6(i,j)+" "+e7(i,j));
+				if(e1(i,j) != -1 && e2(i,j)!=-1 && e3(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e1(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e8(i,j));
+				if(e6(i,j) != -1 && e3(i,j)!=-1 && e5(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e6(i,j)+" "+e3(i,j)+" "+e5(i,j)+" "+e8(i,j));
+				if(e7(i,j) != -1 && e2(i,j)!=-1 && e5(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e7(i,j)+" "+e2(i,j)+" "+e5(i,j)+" "+e8(i,j));
+				if(e4(i,j) != -1 && e2(i,j)!=-1 && e3(i,j)!=-1 && e5(i,j)!=-1)	text.add("-"+e4(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e5(i,j));
 				
+//				}
 			}
 		}
 
@@ -254,37 +257,29 @@ public class SatEncode {
 	//Tren xuong
 	int e1(int r,int c){
 		if(r==0) return -1;
-		if(c!=0){
-			return rd(r-1,c-1);
+		if(c!=h){
+			return ld(r-1,c);
 		}else{
-			return ld(r-1,c); 
+			return rd(r-1,c-1); 
 		}
 	}
 	//Phai vao
 	int e2(int r,int c){
-		if(c==w) return -1;
-		if(r!=h){
-			return ul(r,c);
-		}else{
-			return dl(r-1,c);
-		}
+		if(c==h) return -1;
+		return e6(r,c) + d;
 	}
 	//Duoi len
 	int e3(int r,int c){
 		if(r==h) return -1;
-		if(c!=w){
-			return lu(r,c);
-		}else{
-			return ru(r,c-1);
-		}
+		return e7(r,c)+d;
 	}
 	//Trai vao
 	int e4(int r,int c){
 		if(c==0) return -1;
 		if(r!=0){
-			return dr(r-1,c-1);
-		}else{
 			return ur(r,c-1);
+		}else{
+			return dr(r-1,c-1);
 		}
 	}
 	//Tren len
@@ -294,13 +289,22 @@ public class SatEncode {
 	}
 	//Phai ra
 	int e6(int r,int c){
-		if(c==w) return -1;
-		return e2(r,c)-d;
+		if(c==h) return -1;
+		if(r!=w){
+			return ur(r,c);
+		}else{
+			return dr(r-1,c);
+		}
+		
 	}
 	//Duoi xuong
 	int e7(int r,int c){
-		if(r==h) return -1;
-		return e3(r,c)-d;
+		if(r==w) return -1;
+		if(c!=h){
+			return ld(r,c);
+		}else{
+			return rd(r,c-1);
+		}
 	}
 	//Trai ra
 	int e8(int r,int c){

@@ -1,4 +1,4 @@
-   package MainPackage;
+package MainPackage;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,7 +19,7 @@ public class SatSolver {
 	
 	SatSolver() {
 		ISolver solver = SolverFactory.newDefault();
-        solver.setTimeout(3600); // 1 hour timeout
+        solver.setTimeout(60); // 1 hour timeout
         Reader reader = new DimacsReader(solver);
         // CNF filename is given on the command line 
         try {
