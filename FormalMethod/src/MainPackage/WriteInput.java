@@ -18,7 +18,7 @@ public class WriteInput {
 		satEncode.encode();
 		stringEncoded = satEncode.getTextEncoded();
 	}
-	void write(String fPath){
+	void writeToFile(String fPath){
 //		System.out.print(stringEncoded);
 		try {
 			File file = new File(fPath);
@@ -43,8 +43,12 @@ public class WriteInput {
 			e.printStackTrace();
 		}
 	}
-	void addFoundOutput(){
-		
+	void addFoundOutput(ArrayList<Integer> invertArray){
+		String tempString="";
+		for(int i=0;i<invertArray.size();i++){
+			tempString+=invertArray.get(i)+" ";
+		}
+		stringEncoded.add(tempString);
 	}
 	
 }

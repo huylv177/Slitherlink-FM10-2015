@@ -6,6 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,14 +22,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+import org.sat4j.minisat.core.Solver;
 
 public class Main {
 	JFrame myFrame;
 	static JLabel myLabel;
 	MyPanel myCanvas;
 	ArrayList<JButton> buttons;
-	final static int NUM_OF_BUTTON = 5;
-
+	final static int NUM_OF_BUTTON = 6;
+	final static int BUTTON_HEIGHT = 30;
 	// kich thuoc theo pixel
 	int CANVAS_HEIGHT;
 	int CANVAS_WIDTH;
@@ -50,13 +54,14 @@ public class Main {
 	JTabbedPane tabbedPane;
 	JScrollPane scroolPane;
 
-	
-	///////////////////
+	// /////////////////
 	WriteInput writeInput;
 	SatSolver satSolver;
-	String fInput="input/cnf/input.cnf";
-	////////////////////
-	
+	String fInput = "input/cnf/input.cnf";
+	String fOutputs = "input/cnf/outputs.cnf";
+
+	// //////////////////
+
 	public static void main(String args[]) {
 		new Main();
 	}
@@ -64,6 +69,8 @@ public class Main {
 	Main() {
 
 		// doc file
+		File fileInput = new File(fInput);
+		File fileOutputs = new File(fOutputs);
 		Path filePath = Paths.get("input/55/1.txt");
 		Scanner scanner = null;
 		try {
@@ -118,11 +125,12 @@ public class Main {
 		buttons.get(2).setText("New Puzzle");
 		buttons.get(3).setText("Solve");
 		buttons.get(4).setText("Find another output");
-		buttons.get(0).setBounds(CANVAS_WIDTH + 50, 50, 100, 40);
-		buttons.get(1).setBounds(CANVAS_WIDTH + 50, 100, 100, 40);
-		buttons.get(2).setBounds(CANVAS_WIDTH + 50, 150, 100, 40);
-		buttons.get(3).setBounds(CANVAS_WIDTH + 50, 200, 100, 40);
-		buttons.get(4).setBounds(CANVAS_WIDTH + 50, 250, 100, 40);
+		buttons.get(5).setText("Find all output");
+
+		for (int i = 0; i < buttons.size(); i++) {
+			buttons.get(i).setBounds(CANVAS_WIDTH + 50,
+					50 + (BUTTON_HEIGHT + 10) * i, 150, BUTTON_HEIGHT);
+		}
 
 		myFrame = new JFrame();
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -210,48 +218,31 @@ public class Main {
 		buttons.get(3).addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				writeInput = new WriteInput(val);
-				writeInput.write(fInput);
+				writeInput.writeToFile(fInput);
 				satSolver = new SatSolver();
-				String[] a = satSolver.getString().split(" ");
-				ArrayList<Integer> b = new ArrayList<Integer>();
-				for (int i = 0; i < a.length - 1; i++) {
-					b.add(Integer.parseInt(a[i]));
-				}
-
-				for (int i = 0; i < b.size(); i++) {
-					int edgeCode = Math.abs(b.get(i));
-					if (b.get(i) == edgeCode) {
-						
-//						if(edgeCode==36) System.out.println(e(edgeCode)[0] +" "+ e(edgeCode)[1]);
-						
-						if (e(edgeCode)[2] == 0) {
-//							 System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
-							myCanvas.getRowRightArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
-						} else if (e(edgeCode)[2] == 1) {
-//							 System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
-							myCanvas.getColDownArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
-						} 
-					}
-				}
-				myCanvas.repaint();
+				String[] stringDecoded = satSolver.getString().split(" ");
+				repaintCanvas(stringDecoded);
 			}
+
 		});
 		buttons.get(4).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
-				String[] a = satSolver.getString().split(" ");
-				ArrayList<Integer> b = new ArrayList<Integer>();
-				for (int i = 0; i < a.length - 1; i++) {
-					Integer temp=Integer.parseInt(a[i]);
-					b.add(-temp);
+				solveNext();
+
+			}
+		});
+		buttons.get(5).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				writeInput = new WriteInput(val);
+				solve();
+				writeStringToFile(fileOutputs, satSolver.getString());
+//				while (satSolver.getRESULT_CODE() == 1) {
+				for(int i=0;i<1000;i++){
+					solveNext();
+					appendStringToFile(fileOutputs, satSolver.getString());
 				}
-				
-				for(int i=0;i<b.size();i++){
-					
-					System.out.print(b+" ");
-				}
-//				writeInput.addFoundOutput(b);
 			}
 		});
 	}
@@ -260,57 +251,107 @@ public class Main {
 		int[] e = new int[3];
 		int d = WIDTH * (HEIGHT + 1) + (WIDTH + 1) * HEIGHT;
 		int k = WIDTH * (HEIGHT + 1);
-		
-		if(edgeCode>d){
+
+		if (edgeCode > d) {
 			edgeCode -= d;
 		}
-		if(edgeCode <= k){
-			if(edgeCode % HEIGHT == 0){
-				e[0] = edgeCode/HEIGHT-1 ;
+		if (edgeCode <= k) {
+			if (edgeCode % HEIGHT == 0) {
+				e[0] = edgeCode / HEIGHT - 1;
 				e[1] = HEIGHT - 1;
 				e[2] = 0;
-			}else{
-				e[0] = edgeCode/HEIGHT;
-				e[1] = edgeCode%HEIGHT -1;
-				e[2] = 0;
-			}
-		}else{
-			edgeCode = edgeCode - k;
-			if((edgeCode%(HEIGHT+1))==0){
-				e[0] = edgeCode/(HEIGHT+1) - 1;
-				e[1] = HEIGHT;
-				e[2] = 1;
-			}else{
-				e[0] = edgeCode/(HEIGHT+1);
-				e[1] = edgeCode%(HEIGHT+1) - 1;
-				e[2] = 1;
-			}
-		}
-		
-		/*
-		if (edgeCode <= d) {
-			if (edgeCode <= k) {
-				e[1] = (edgeCode-1) % WIDTH ;
-				e[0] = (edgeCode - e[1]) / WIDTH;
-				e[2] = 0;
 			} else {
-				e[1] = (edgeCode - k-1) % (WIDTH+1);
-				e[0] = (edgeCode - k - e[1]) / (WIDTH+1);
-				e[2] = 1;
+				e[0] = edgeCode / HEIGHT;
+				e[1] = edgeCode % HEIGHT - 1;
+				e[2] = 0;
 			}
 		} else {
-			if ((edgeCode - d) <= k) {
-				e[1] = (edgeCode - d-1) % WIDTH ;
-				e[0] = (edgeCode - d - e[1]) / WIDTH;
-				e[2] = 2;
+			edgeCode = edgeCode - k;
+			if ((edgeCode % (HEIGHT + 1)) == 0) {
+				e[0] = edgeCode / (HEIGHT + 1) - 1;
+				e[1] = HEIGHT;
+				e[2] = 1;
 			} else {
-				e[1] = (edgeCode - d - k-1) % (WIDTH+1);
-				e[0] = (edgeCode - d - k - e[1]) / (WIDTH+1);
-				e[2] = 3;
+				e[0] = edgeCode / (HEIGHT + 1);
+				e[1] = edgeCode % (HEIGHT + 1) - 1;
+				e[2] = 1;
 			}
 		}
-		*/
+
 		return e;
 	}
 
+	public void solveNext() {
+		String[] a = satSolver.getString().split(" ");
+		ArrayList<Integer> b = new ArrayList<Integer>();
+		for (int i = 0; i < a.length - 1; i++) {
+			Integer temp = Integer.parseInt(a[i]);
+			b.add(-temp);
+		}
+		writeInput.addFoundOutput(b);
+		writeInput.writeToFile(fInput);
+		satSolver = new SatSolver();
+		String[] stringDecoded = satSolver.getString().split(" ");
+		repaintCanvas(stringDecoded);
+	}
+
+	public void solve() {
+		
+		writeInput.writeToFile(fInput);
+		satSolver = new SatSolver();
+		String[] stringDecoded = satSolver.getString().split(" ");
+		repaintCanvas(stringDecoded);
+	}
+
+	private void repaintCanvas(String[] stringDecoded) {
+
+		ArrayList<Integer> b = new ArrayList<Integer>();
+		for (int i = 0; i < stringDecoded.length - 1; i++) {
+			b.add(Integer.parseInt(stringDecoded[i]));
+		}
+
+		for (int i = 0; i < b.size(); i++) {
+			int edgeCode = Math.abs(b.get(i));
+			if (b.get(i) == edgeCode) {
+
+				// if(edgeCode==36) System.out.println(e(edgeCode)[0] +" "+
+				// e(edgeCode)[1]);
+
+				if (e(edgeCode)[2] == 0) {
+					// System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
+					myCanvas.getRowRightArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
+				} else if (e(edgeCode)[2] == 1) {
+					// System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
+					myCanvas.getColDownArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
+				}
+			}
+		}
+		myCanvas.repaint();
+	}
+
+	private void appendStringToFile(File file, String text) {
+		try {
+				FileWriter fw = new FileWriter(file.getAbsoluteFile(),true);
+				BufferedWriter bw = new BufferedWriter(fw);
+				bw.newLine();
+				bw.append(text);
+				bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void writeStringToFile(File file, String text) {
+		try {
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(text);
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

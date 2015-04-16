@@ -16,13 +16,22 @@ import org.sat4j.specs.TimeoutException;
 public class SatSolver {
 
 	private String stringDecoded="";
-	
+	private int RESULT_CODE=-1;
+	public int getRESULT_CODE() {
+		return RESULT_CODE;
+	}
+
+	public void setRESULT_CODE(int rESULT_CODE) {
+		RESULT_CODE = rESULT_CODE;
+	}
+
 	SatSolver() {
 		ISolver solver = SolverFactory.newDefault();
         solver.setTimeout(60); // 1 hour timeout
         Reader reader = new DimacsReader(solver);
         // CNF filename is given on the command line 
         try {
+        	RESULT_CODE=1;
             IProblem problem = reader.parseInstance("input/cnf/input.cnf");
             if (problem.isSatisfiable()) {
                 System.out.println("Satisfiable !");
@@ -31,6 +40,7 @@ public class SatSolver {
                 reader.decode(problem.model(), pw);
                 pw.close();
             } else {
+            	RESULT_CODE=0;
                 System.out.println("Unsatisfiable !");
             }
         } catch (FileNotFoundException e) {
