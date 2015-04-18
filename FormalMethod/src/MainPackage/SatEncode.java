@@ -35,38 +35,39 @@ public class SatEncode {
 					text.add("-" + rd(i, j));
 					break;
 				case 1:
+//					text.add("kkkkkkk");
 					text.add(ul(i, j) + " " + ur(i, j) + " " + dl(i, j) + " "
 							+ dr(i, j) + " " + lu(i, j) + " " + ld(i, j) + " "
 							+ ru(i, j) + " " + rd(i, j));
-					text.add("-" + rd(i, j) + "-" + ur(i, j));
-					text.add("-" + rd(i, j) + "-" + ul(i, j));
-					text.add("-" + ru(i, j) + "-" + ur(i, j));
-					text.add("-" + ru(i, j) + "-" + ul(i, j));
+					text.add("-" + rd(i, j) + " -" + ur(i, j));
+					text.add("-" + rd(i, j) + " -" + ul(i, j));
+					text.add("-" + ru(i, j) + " -" + ur(i, j));
+					text.add("-" + ru(i, j) + " -" + ul(i, j));
 
-					text.add("-" + rd(i, j) + "-" + ld(i, j));
-					text.add("-" + rd(i, j) + "-" + lu(i, j));
-					text.add("-" + ru(i, j) + "-" + ld(i, j));
-					text.add("-" + ru(i, j) + "-" + lu(i, j));
+					text.add("-" + rd(i, j) + " -" + ld(i, j));
+					text.add("-" + rd(i, j) + " -" + lu(i, j));
+					text.add("-" + ru(i, j) + " -" + ld(i, j));
+					text.add("-" + ru(i, j) + " -" + lu(i, j));
 
-					text.add("-" + rd(i, j) + "-" + dr(i, j));
-					text.add("-" + rd(i, j) + "-" + dl(i, j));
-					text.add("-" + ru(i, j) + "-" + dr(i, j));
-					text.add("-" + ru(i, j) + "-" + dl(i, j));
+					text.add("-" + rd(i, j) + " -" + dr(i, j));
+					text.add("-" + rd(i, j) + " -" + dl(i, j));
+					text.add("-" + ru(i, j) + " -" + dr(i, j));
+					text.add("-" + ru(i, j) + " -" + dl(i, j));
 
-					text.add("-" + ur(i, j) + "-" + ld(i, j));
-					text.add("-" + rd(i, j) + "-" + ur(i, j));
-					text.add("-" + rd(i, j) + "-" + ur(i, j));
-					text.add("-" + rd(i, j) + "-" + ur(i, j));
+					text.add("-" + ur(i, j) + " -" + ld(i, j));
+					text.add("-" + rd(i, j) + " -" + ur(i, j));
+					text.add("-" + rd(i, j) + " -" + ur(i, j));
+					text.add("-" + rd(i, j) + " -" + ur(i, j));
 
-					text.add("-" + ur(i, j) + "-" + dr(i, j));
-					text.add("-" + ur(i, j) + "-" + dl(i, j));
-					text.add("-" + ul(i, j) + "-" + dr(i, j));
-					text.add("-" + ul(i, j) + "-" + dl(i, j));
+					text.add("-" + ur(i, j) + " -" + dr(i, j));
+					text.add("-" + ur(i, j) + " -" + dl(i, j));
+					text.add("-" + ul(i, j) + " -" + dr(i, j));
+					text.add("-" + ul(i, j) + " -" + dl(i, j));
 
-					text.add("-" + ld(i, j) + "-" + dr(i, j));
-					text.add("-" + ld(i, j) + "-" + dl(i, j));
-					text.add("-" + lu(i, j) + "-" + dr(i, j));
-					text.add("-" + lu(i, j) + "-" + dl(i, j));
+					text.add("-" + ld(i, j) + " -" + dr(i, j));
+					text.add("-" + ld(i, j) + " -" + dl(i, j));
+					text.add("-" + lu(i, j) + " -" + dr(i, j));
+					text.add("-" + lu(i, j) + " -" + dl(i, j));
 
 					break;
 				case 2:

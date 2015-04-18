@@ -6,10 +6,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -57,8 +60,9 @@ public class Main {
 	// /////////////////
 	WriteInput writeInput;
 	SatSolver satSolver;
-	String fInput = "input/cnf/input.cnf";
-	String fOutputs = "input/cnf/outputs.cnf";
+	String filePathInput = "input/1010/1.txt";
+	String cnfInput = "input/cnf/input.cnf";
+	String cnfOutputs = "input/cnf/outputs.cnf";
 
 	// //////////////////
 
@@ -69,9 +73,9 @@ public class Main {
 	Main() {
 
 		// doc file
-		File fileInput = new File(fInput);
-		File fileOutputs = new File(fOutputs);
-		Path filePath = Paths.get("input/55/1.txt");
+		File fileInput = new File(cnfInput);
+		File fileOutputs = new File(cnfOutputs);
+		Path filePath = Paths.get(filePathInput);
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(filePath);
@@ -158,6 +162,20 @@ public class Main {
 		// panelCanvas.add(vbar, BorderLayout.EAST);
 		scroolPane.getViewport().add(myCanvas);
 		panelCanvas.add(scroolPane, BorderLayout.CENTER);
+		
+		myFrame.setFocusable(true);
+		myFrame.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent e) {			}
+			@Override
+			public void keyReleased(KeyEvent e) {			}
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==32){
+					solveNext();
+				}
+			}
+		});
 
 		myFrame.addComponentListener(new ComponentListener() {
 			@Override
@@ -218,7 +236,7 @@ public class Main {
 		buttons.get(3).addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				writeInput = new WriteInput(val);
-				writeInput.writeToFile(fInput);
+				writeInput.writeToFile(cnfInput);
 				satSolver = new SatSolver();
 				String[] stringDecoded = satSolver.getString().split(" ");
 				repaintCanvas(stringDecoded);
@@ -238,8 +256,7 @@ public class Main {
 				writeInput = new WriteInput(val);
 				solve();
 				writeStringToFile(fileOutputs, satSolver.getString());
-//				while (satSolver.getRESULT_CODE() == 1) {
-				for(int i=0;i<1000;i++){
+				while (satSolver.getRESULT_CODE() == 1) {
 					solveNext();
 					appendStringToFile(fileOutputs, satSolver.getString());
 				}
@@ -289,7 +306,7 @@ public class Main {
 			b.add(-temp);
 		}
 		writeInput.addFoundOutput(b);
-		writeInput.writeToFile(fInput);
+		writeInput.writeToFile(cnfInput);
 		satSolver = new SatSolver();
 		String[] stringDecoded = satSolver.getString().split(" ");
 		repaintCanvas(stringDecoded);
@@ -297,7 +314,7 @@ public class Main {
 
 	public void solve() {
 		
-		writeInput.writeToFile(fInput);
+		writeInput.writeToFile(cnfInput);
 		satSolver = new SatSolver();
 		String[] stringDecoded = satSolver.getString().split(" ");
 		repaintCanvas(stringDecoded);
@@ -305,11 +322,15 @@ public class Main {
 
 	private void repaintCanvas(String[] stringDecoded) {
 
+		clearArray(myCanvas.getColDownArr(), 4, 5);
+		clearArray(myCanvas.getRowRightArr(), 5, 4);
+		
+		//doc output, chuyen String thanh array int,
 		ArrayList<Integer> b = new ArrayList<Integer>();
 		for (int i = 0; i < stringDecoded.length - 1; i++) {
 			b.add(Integer.parseInt(stringDecoded[i]));
+//			System.out.println(Integer.parseInt(stringDecoded[i])+" ");
 		}
-
 		for (int i = 0; i < b.size(); i++) {
 			int edgeCode = Math.abs(b.get(i));
 			if (b.get(i) == edgeCode) {
@@ -319,9 +340,11 @@ public class Main {
 
 				if (e(edgeCode)[2] == 0) {
 					// System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
+					
 					myCanvas.getRowRightArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
 				} else if (e(edgeCode)[2] == 1) {
 					// System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
+					
 					myCanvas.getColDownArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
 				}
 			}
@@ -352,6 +375,14 @@ public class Main {
 			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	void clearArray(boolean[][] a,int r,int c){
+		for(int i=0;i<r;i++){
+			for(int j=0;j<c;j++){
+				a[i][j]=false;
+			}
 		}
 	}
 }

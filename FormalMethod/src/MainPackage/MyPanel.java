@@ -52,7 +52,7 @@ public class MyPanel extends JPanel implements MouseListener {
 		return rowLeft;
 	}
 	boolean[][] getRowRightArr(){
-		return rowLeft;
+		return rowRight;
 	}
 	boolean[][] getColUpArr(){
 		return colUp;
