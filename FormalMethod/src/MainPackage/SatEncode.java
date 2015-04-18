@@ -181,26 +181,66 @@ public class SatEncode {
 				}
 			}
 		}
+		
+		//encode cũ
+//		for(int i=0;i<w+1;i++){
+//			for(int j=0;j<h+1;j++){
+////				if(i==5 && j==5){
+////				text.add("-----------------------------");
+////				System.out.println(e1(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e4(i,j)+ " "+e5(i,j)+" "+e6(i,j)+" "+e7(i,j)+" "+e8(i,j));
+//				//moi dinh co nhieu nhat 1 duong di vao
+//				if(e1(i,j) != -1 && e4(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e4(i,j));
+//				if(e1(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e6(i,j));
+//				if(e1(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e7(i,j));
+//				if(e4(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e4(i,j)+" -"+e6(i,j));
+//				if(e4(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e4(i,j)+" -"+e7(i,j));
+//				if(e6(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e6(i,j)+" -"+e7(i,j));
+//				
+//				//moi dinh co nhieu nhat 1 duong di ra
+//				if(e2(i,j) != -1 && e3(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e3(i,j));
+//				if(e2(i,j) != -1 && e5(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e5(i,j));
+//				if(e2(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e8(i,j));
+//				if(e3(i,j) != -1 && e5(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e5(i,j));
+//				if(e3(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e8(i,j));
+//				if(e5(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e5(i,j)+" -"+e8(i,j));
+//				
+//				//duong vao cua 1 dinh ko la duong ra cua chinh no
+//				if(e1(i,j) != -1 && e5(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e5(i,j));
+//				if(e2(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e6(i,j));
+//				if(e3(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e7(i,j));
+//				if(e4(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e4(i,j)+" -"+e8(i,j));
+//				
+//				//duong vao la 1 canh va duong ra o 3 canh kia
+//				if(e1(i,j) != -1 && e2(i,j)!=-1 && e3(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e1(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e8(i,j));
+//				if(e6(i,j) != -1 && e3(i,j)!=-1 && e5(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e6(i,j)+" "+e3(i,j)+" "+e5(i,j)+" "+e8(i,j));
+//				if(e7(i,j) != -1 && e2(i,j)!=-1 && e5(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e7(i,j)+" "+e2(i,j)+" "+e5(i,j)+" "+e8(i,j));
+//				if(e4(i,j) != -1 && e2(i,j)!=-1 && e3(i,j)!=-1 && e5(i,j)!=-1)	text.add("-"+e4(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e5(i,j));
+//				
+////				}
+//			}
+//		}
+
+		//encode mới của Quân Trần
 		for(int i=0;i<w+1;i++){
 			for(int j=0;j<h+1;j++){
 //				if(i==5 && j==5){
 //				text.add("-----------------------------");
-//				System.out.println(e1(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e4(i,j)+ " "+e5(i,j)+" "+e6(i,j)+" "+e7(i,j)+" "+e8(i,j));
+//				System.out.println(i+ " " +j + " " +e1(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e4(i,j)+ " "+e5(i,j)+" "+e6(i,j)+" "+e7(i,j)+" "+e8(i,j));
 				//moi dinh co nhieu nhat 1 duong di vao
+				if(e1(i,j) != -1 && e2(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e2(i,j));
+				if(e1(i,j) != -1 && e3(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e3(i,j));
 				if(e1(i,j) != -1 && e4(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e4(i,j));
-				if(e1(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e6(i,j));
-				if(e1(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e7(i,j));
-				if(e4(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e4(i,j)+" -"+e6(i,j));
-				if(e4(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e4(i,j)+" -"+e7(i,j));
-				if(e6(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e6(i,j)+" -"+e7(i,j));
-				
-				//moi dinh co nhieu nhat 1 duong di ra
 				if(e2(i,j) != -1 && e3(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e3(i,j));
-				if(e2(i,j) != -1 && e5(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e5(i,j));
-				if(e2(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e8(i,j));
-				if(e3(i,j) != -1 && e5(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e5(i,j));
-				if(e3(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e8(i,j));
+				if(e2(i,j) != -1 && e4(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e4(i,j));
+				if(e3(i,j) != -1 && e4(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e4(i,j));
+			
+				//moi dinh co nhieu nhat 1 duong di ra
+				if(e5(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e5(i,j)+" -"+e6(i,j));
+				if(e5(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e5(i,j)+" -"+e7(i,j));
 				if(e5(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e5(i,j)+" -"+e8(i,j));
+				if(e6(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e6(i,j)+" -"+e7(i,j));
+				if(e6(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e6(i,j)+" -"+e8(i,j));
+				if(e7(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e7(i,j)+" -"+e8(i,j));
 				
 				//duong vao cua 1 dinh ko la duong ra cua chinh no
 				if(e1(i,j) != -1 && e5(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e5(i,j));
@@ -208,16 +248,70 @@ public class SatEncode {
 				if(e3(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e7(i,j));
 				if(e4(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e4(i,j)+" -"+e8(i,j));
 				
-				//duong vao la 1 canh va duong ra o 3 canh kia
-				if(e1(i,j) != -1 && e2(i,j)!=-1 && e3(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e1(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e8(i,j));
-				if(e6(i,j) != -1 && e3(i,j)!=-1 && e5(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e6(i,j)+" "+e3(i,j)+" "+e5(i,j)+" "+e8(i,j));
-				if(e7(i,j) != -1 && e2(i,j)!=-1 && e5(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e7(i,j)+" "+e2(i,j)+" "+e5(i,j)+" "+e8(i,j));
-				if(e4(i,j) != -1 && e2(i,j)!=-1 && e3(i,j)!=-1 && e5(i,j)!=-1)	text.add("-"+e4(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e5(i,j));
+//				duong vao la 1 canh va duong ra o 3 canh kia
+//				text.add("-----------------------3 main, dinh:" + i + " "+ j);
 				
-//				}
+				// tong quat voi dinh co ca 4 canh xung quanh
+				if(e1(i,j) != -1 && e6(i,j)!=-1 && e7(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e1(i,j)+" "+e6(i,j)+" "+e7(i,j)+" "+e8(i,j));
+				if(e2(i,j) != -1 && e5(i,j)!=-1 && e7(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e2(i,j)+" "+e5(i,j)+" "+e7(i,j)+" "+e8(i,j));
+				if(e3(i,j) != -1 && e5(i,j)!=-1 && e6(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e3(i,j)+" "+e5(i,j)+" "+e6(i,j)+" "+e8(i,j));
+				if(e4(i,j) != -1 && e5(i,j)!=-1 && e6(i,j)!=-1 && e7(i,j)!=-1)	text.add("-"+e4(i,j)+" "+e5(i,j)+" "+e6(i,j)+" "+e7(i,j));
+//				text.add("----------------------- dk bon dinh");
+				//dinh goc trai tren cung
+				if(e2(i,j) != -1 && e3(i,j) != -1 && e4(i,j) == -1 && e1(i,j) == -1){
+//					text.add("dinh goc trai tren cung");
+					text.add("-"+e3(i,j)+" "+e6(i,j));
+					text.add("-"+e2(i,j)+" "+e7(i,j));
+				}
+				//dinh goc trai duoi cung
+				if(e2(i,j) != -1 && e1(i,j) != -1 && e3(i,j)==-1 && e4(i,j) == -1){
+					text.add("-"+e2(i,j)+" "+e5(i,j));
+					text.add("-"+e1(i,j)+" "+e6(i,j));
+				}
+				//phai tren cung
+				if(e4(i,j) != -1 && e3(i,j) != -1 && e2(i,j) == -1 && e1(i,j) == -1){
+//					text.add("dinh goc phai tren cung");
+					text.add("-"+e4(i,j)+" "+e7(i,j));
+					text.add("-"+e3(i,j)+" "+e8(i,j));
+				}
+				//phai duoi cung
+				if(e4(i,j) != -1 && e1(i,j) != -1 && e2(i,j) == -1 && e3(i,j) == -1){
+					text.add("-"+e4(i,j)+" "+e5(i,j));
+					text.add("-"+e1(i,j)+" "+e8(i,j));
+				}
+//				text.add("----------------------- dk bien");
+				// bien tren
+				if(e4(i,j) != -1 && e2(i,j) != -1 && e3(i,j) != -1 && e1(i,j) == -1){
+					text.add("-"+e4(i,j)+" "+e6(i,j)+" "+e7(i,j));
+					text.add("-"+e3(i,j)+" "+e6(i,j)+" "+e8(i,j));
+					text.add("-"+e2(i,j)+" "+e5(i,j)+" "+e7(i,j));
+				}
+				//bien trai
+				if(e1(i,j) != -1 && e2(i,j) != -1 && e3(i,j) != -1 && e4(i,j) == -1){
+					text.add("-"+e2(i,j)+" "+e5(i,j)+" "+e7(i,j));
+					text.add("-"+e3(i,j)+" "+e5(i,j)+" "+e6(i,j));
+					text.add("-"+e1(i,j)+" "+e6(i,j)+" "+e7(i,j));
+				}
+				//bien duoi
+				if(e4(i,j) != -1 && e2(i,j) != -1 && e1(i,j) != -1 && e3(i,j) == -1){
+					text.add("-"+e2(i,j)+" "+e5(i,j)+" "+e8(i,j));
+					text.add("-"+e1(i,j)+" "+e6(i,j)+" "+e8(i,j));
+					text.add("-"+e4(i,j)+" "+e6(i,j)+" "+e5(i,j));
+				}
+
+				//bien phai
+				if(e4(i,j) != -1 && e1(i,j) != -1 && e3(i,j) != -1 && e2(i,j) == -1){
+					text.add("-"+e4(i,j)+" "+e5(i,j)+" "+e7(i,j));
+					text.add("-"+e1(i,j)+" "+e8(i,j)+" "+e7(i,j));
+					text.add("-"+e3(i,j)+" "+e5(i,j)+" "+e8(i,j));
+				}
+				
+//				text.add("ket thuc dieu kien main");
+				// duong di vao cua dinh nay la duong ra cua dinh truoc do
+
+				
 			}
 		}
-
 	}
 
 	public ArrayList<String> getTextEncoded() {

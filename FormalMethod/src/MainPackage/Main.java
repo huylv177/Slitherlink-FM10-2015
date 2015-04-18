@@ -322,8 +322,8 @@ public class Main {
 
 	private void repaintCanvas(String[] stringDecoded) {
 
-		clearArray(myCanvas.getColDownArr(), 4, 5);
-		clearArray(myCanvas.getRowRightArr(), 5, 4);
+		clearArray(myCanvas.getColDownArr(), WIDTH, HEIGHT+1);
+		clearArray(myCanvas.getRowRightArr(), WIDTH+1, HEIGHT);
 		
 		//doc output, chuyen String thanh array int,
 		ArrayList<Integer> b = new ArrayList<Integer>();
