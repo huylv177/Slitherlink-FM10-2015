@@ -13,6 +13,8 @@ import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 
+import Swing.MainFrame;
+
 public class SatSolver {
 
 	private String stringDecoded="";
@@ -25,18 +27,19 @@ public class SatSolver {
 		RESULT_CODE = rESULT_CODE;
 	}
 
-	SatSolver() {
+	public SatSolver() {
 		ISolver solver = SolverFactory.newDefault();
         solver.setTimeout(60); // 1 hour timeout
         Reader reader = new DimacsReader(solver);
         // CNF filename is given on the command line 
         try {
         	RESULT_CODE=1;
-            IProblem problem = reader.parseInstance("input/cnf/input.cnf");
+            IProblem problem = reader.parseInstance("cnf/input.cnf");
             if (problem.isSatisfiable()) {
                 System.out.println("Satisfiable !");
                 stringDecoded=reader.decode(problem.model());
-                PrintWriter pw = new PrintWriter("input/cnf/output.cnf");
+                MainFrame.textPaneOutput.setText(stringDecoded);
+                PrintWriter pw = new PrintWriter("cnf/output.cnf");
                 reader.decode(problem.model(), pw);
                 pw.close();
             } else {

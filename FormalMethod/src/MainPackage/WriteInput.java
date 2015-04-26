@@ -6,19 +6,21 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import Swing.MainFrame;
+
 public class WriteInput {
 	private ArrayList<String> stringEncoded;
 	private SatEncode satEncode;
 	private int w;
 	private int h;
-	WriteInput(int[][] val){
-		w= Main.WIDTH;
-		h= Main.HEIGHT;
+	public WriteInput(int[][] val){
+		w= MainFrame.WIDTH;
+		h= MainFrame.HEIGHT;
 		satEncode = new SatEncode(val);
 		satEncode.encode();
 		stringEncoded = satEncode.getTextEncoded();
 	}
-	void writeToFile(String fPath){
+	public void writeToFile(String fPath){
 //		System.out.print(stringEncoded);
 		try {
 			File file = new File(fPath);
@@ -29,10 +31,14 @@ public class WriteInput {
 			BufferedWriter bw = new BufferedWriter(fw);
 			
 			bw.write("p cnf "+(4*w*h+2*w+2*h)+" "+stringEncoded.size());
+			MainFrame.lblNumOfVariable.setText((4*w*h+2*w+2*h)+"");
+			MainFrame.lblNumOfClause.setText(stringEncoded.size()+"");
+			MainFrame.textPaneInput.setText("p cnf "+(4*w*h+2*w+2*h)+" "+stringEncoded.size());
 			bw.newLine();
 			
 			for(int i=0;i<stringEncoded.size();i++){
 				bw.write(stringEncoded.get(i)+" 0");
+				MainFrame.textPaneInput.append(stringEncoded.get(i)+" 0\n");
 				bw.newLine();
 			}
 			bw.close();
@@ -43,7 +49,7 @@ public class WriteInput {
 			e.printStackTrace();
 		}
 	}
-	void addFoundOutput(ArrayList<Integer> invertArray){
+	public void addFoundOutput(ArrayList<Integer> invertArray){
 		String tempString="";
 		for(int i=0;i<invertArray.size();i++){
 			tempString+=invertArray.get(i)+" ";
