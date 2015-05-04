@@ -7,37 +7,40 @@ import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.CancellationException;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import MainPackage.SatEncode;
+import MainPackage.LoadingThread;
 import MainPackage.SatSolver;
+import MainPackage.SolveThread;
 import MainPackage.WriteInput;
+
+import javax.swing.JInternalFrame;
+
 
 public class MainFrame {
 
 	private JFrame frame;
-	private Dimension area;
 	private MyPanel myCanvas;
 	private WriteInput writeInput;
 	private SatSolver satSolver;
@@ -45,9 +48,16 @@ public class MainFrame {
 	public static JTextArea textPaneOutput;
 	public static JLabel lblNumOfVariable;
 	public static JLabel lblNumOfClause;
-
-	private String filePathInput = "input/44/1.txt";
-	private String cnfInput = "cnf/input.cnf";
+	public JDialog loadingDialog;
+	JLabel lblStatus;
+	SolveThread solveThread;
+	NewGameFrame newGameFrame;
+	
+	public JLabel lblTotalTime;
+//	JLabel timerLabel;
+	
+	private String filePathInput = "input/55/2.txt";
+	public static String cnfInput = "cnf/input.cnf";
 	private String cnfOutputs = "cnf/outputs.cnf";
 
 	// kich thuoc theo pixel
@@ -83,6 +93,7 @@ public class MainFrame {
 	private void initialize() {
 		readInputFile();
 
+		newGameFrame = new NewGameFrame();
 		frame = new JFrame();
 		frame.setBounds(100, 100, 600, 484);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -182,7 +193,7 @@ public class MainFrame {
 
 		JLabel lblTotalTime1 = new JLabel("Total Time:");
 
-		JLabel lblTotalTime = new JLabel("--:--");
+		lblTotalTime = new JLabel("--:--");
 
 		JLabel lblNumOfVariable1 = new JLabel("Num of variable:");
 
@@ -315,6 +326,12 @@ public class MainFrame {
 		menuBar.add(mnFile);
 
 		JMenuItem mntmNewGame = new JMenuItem("New game");
+		mntmNewGame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				newGameFrame.setVisible(true);
+			}
+		});
 		mnFile.add(mntmNewGame);
 
 		JMenuItem mntmOpen = new JMenuItem("Open");
@@ -348,6 +365,7 @@ public class MainFrame {
 		panel1.add(p3, BorderLayout.EAST);
 
 		JButton btnNewGame = new JButton("New Puzzle");
+		btnNewGame.setToolTipText("Play a new random puzzle");
 
 		JLabel lblNewLabel = new JLabel("Size:");
 
@@ -357,11 +375,12 @@ public class MainFrame {
 
 		JLabel lblInputCode = new JLabel("1");
 
-		JLabel lblStatus = new JLabel("Status:");
+		JLabel lblStatus1 = new JLabel("Status:");
 
-		JLabel lblNotCorrect = new JLabel("Not correct");
+		lblStatus = new JLabel("Not correct");
 
 		JButton btnClear = new JButton("Clear");
+		btnClear.setToolTipText("Clear game");
 		btnClear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 			}
@@ -372,110 +391,86 @@ public class MainFrame {
 		JButton btnSolve = new JButton("Solve");
 
 		JButton btnFind = new JButton("Solve Now");
-
-		LoadingPanel pnLoadingImage = new LoadingPanel();
-		pnLoadingImage.setVisible(false);
 		GroupLayout gl_p3 = new GroupLayout(p3);
-		gl_p3.setHorizontalGroup(gl_p3
-				.createParallelGroup(Alignment.LEADING)
-				.addGroup(
-						gl_p3.createSequentialGroup()
-								.addContainerGap()
-								.addGroup(
-										gl_p3.createParallelGroup(
-												Alignment.LEADING)
-												.addComponent(
-														pnLoadingImage,
-														GroupLayout.PREFERRED_SIZE,
-														80,
-														GroupLayout.PREFERRED_SIZE)
-												.addComponent(
-														btnNewGame,
-														GroupLayout.DEFAULT_SIZE,
-														131, Short.MAX_VALUE)
-												.addGroup(
-														gl_p3.createSequentialGroup()
-																.addComponent(
-																		lblNewLabel)
-																.addPreferredGap(
-																		ComponentPlacement.RELATED)
-																.addComponent(
-																		lblSize))
-												.addGroup(
-														gl_p3.createSequentialGroup()
-																.addComponent(
-																		lblInputCode1)
-																.addPreferredGap(
-																		ComponentPlacement.RELATED)
-																.addComponent(
-																		lblInputCode))
-												.addGroup(
-														gl_p3.createSequentialGroup()
-																.addComponent(
-																		lblStatus)
-																.addPreferredGap(
-																		ComponentPlacement.RELATED)
-																.addComponent(
-																		lblNotCorrect))
-												.addComponent(btnFind,
-														Alignment.TRAILING)
-												.addComponent(
-														btnClear,
-														Alignment.TRAILING,
-														GroupLayout.DEFAULT_SIZE,
-														131, Short.MAX_VALUE)
-												.addComponent(
-														btnCheck,
-														Alignment.TRAILING,
-														GroupLayout.DEFAULT_SIZE,
-														131, Short.MAX_VALUE)
-												.addComponent(
-														btnSolve,
-														Alignment.TRAILING,
-														GroupLayout.DEFAULT_SIZE,
-														131, Short.MAX_VALUE))
-								.addContainerGap()));
-		gl_p3.setVerticalGroup(gl_p3.createParallelGroup(Alignment.LEADING)
-				.addGroup(
-						gl_p3.createSequentialGroup()
-								.addContainerGap()
-								.addGroup(
-										gl_p3.createParallelGroup(
-												Alignment.BASELINE)
-												.addComponent(lblNewLabel)
-												.addComponent(lblSize))
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addGroup(
-										gl_p3.createParallelGroup(
-												Alignment.BASELINE)
-												.addComponent(lblInputCode1)
-												.addComponent(lblInputCode))
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addGroup(
-										gl_p3.createParallelGroup(
-												Alignment.BASELINE)
-												.addComponent(lblStatus)
-												.addComponent(lblNotCorrect))
-								.addGap(15)
-								.addComponent(btnNewGame)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(btnClear)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(btnCheck)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(btnSolve)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(btnFind)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(pnLoadingImage,
-										GroupLayout.PREFERRED_SIZE, 75,
-										GroupLayout.PREFERRED_SIZE)
-								.addContainerGap(96, Short.MAX_VALUE)));
+		gl_p3.setHorizontalGroup(
+			gl_p3.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_p3.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_p3.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnNewGame, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+						.addGroup(gl_p3.createSequentialGroup()
+							.addComponent(lblNewLabel)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblSize))
+						.addGroup(gl_p3.createSequentialGroup()
+							.addComponent(lblInputCode1)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblInputCode))
+						.addGroup(gl_p3.createSequentialGroup()
+							.addComponent(lblStatus1)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblStatus))
+						.addComponent(btnClear, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+						.addComponent(btnCheck, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+						.addComponent(btnSolve, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+						.addComponent(btnFind, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE))
+					.addContainerGap())
+		);
+		gl_p3.setVerticalGroup(
+			gl_p3.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_p3.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_p3.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNewLabel)
+						.addComponent(lblSize))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_p3.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblInputCode1)
+						.addComponent(lblInputCode))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_p3.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblStatus1)
+						.addComponent(lblStatus))
+					.addGap(15)
+					.addComponent(btnNewGame)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnClear)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnCheck)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnSolve)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnFind)
+					.addContainerGap(177, Short.MAX_VALUE))
+		);
+
 		p3.setLayout(gl_p3);
 
-		// area = new Dimension(CANVAS_WIDTH,CANVAS_HEIGHT);
-		// myCanvas.setPreferredSize(area);
+		
+		
+		JButton btCancel = new JButton("Cancel");
+//		timerLabel = new JLabel("0");
+		loadingDialog = new JDialog(frame, "Progress Dialog", true);
+        JProgressBar dpb = new JProgressBar(0, 100);
+//        loadingDialog.add(BorderLayout.NORTH,timerLabel);
+        loadingDialog.getContentPane().add(BorderLayout.CENTER, dpb);
+        loadingDialog.getContentPane().add(BorderLayout.SOUTH,btCancel);
+        loadingDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dpb.setIndeterminate(true);
+        loadingDialog.setSize(200, 80);
+        loadingDialog.setLocationRelativeTo(frame);
 
+		btCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try{
+				solveThread.cancel(true);
+				}catch(CancellationException e){
+					System.out.println(e.getMessage());
+				}
+			}
+		});
+		
 		btnClear.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -497,7 +492,6 @@ public class MainFrame {
 		btnSolve.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				pnLoadingImage.setVisible(true);
 				writeInput = new WriteInput(val);
 				Long beforeEncode = System.currentTimeMillis();
 				writeInput.writeToFile(cnfInput);
@@ -512,113 +506,31 @@ public class MainFrame {
 				float solveTime = ((float) (afterSolve - beforeSolve)) / 1000;
 				lblSolveTime.setText("" + solveTime);
 				// System.out.println("solve Time:" +solveTime);
-				pnLoadingImage.setVisible(false);
 				lblTotalTime.setText("" + (solveTime + encodeTime));
 
 				String[] stringDecoded = satSolver.getString().split(" ");
-				repaintCanvas(stringDecoded);
+				myCanvas.repaintCanvas(stringDecoded);
 			}
 		});
 		btnFind.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				solveNext();
-
-				// ////////////////////////////////
-				// writeInput = new WriteInput(val);
-				// solve();
-				// writeStringToFile(fileOutputs, satSolver.getString());
-				// while (satSolver.getRESULT_CODE() == 1) {
-				// solveNext();
-				// appendStringToFile(fileOutputs, satSolver.getString());
-				// }
+				long start = System.currentTimeMillis();
+				solveThread = new SolveThread(loadingDialog,val,myCanvas,start,lblTotalTime,lblStatus);
+				solveThread.execute();
+				loadingDialog.setVisible(true);
 			}
 		});
 
-	}
-
-	// Ham dung de kiem tra da thoa man luat 3 chua
-	public boolean checkLoop(int[] edge) {
-		int firstEdge = 0;
-		int count = 0;// la tong so canh nam tren duong minh duyet
-		for (int i = 0; i < edge.length - 1; i++) {
-			if (edge[i] > 0) {
-				firstEdge = i + 1;
-//				System.out.print("edge" + edge[i]);
-				count = 1;
-				break;
+		newGameFrame.btnOk.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String temp = newGameFrame.comboBox.getSelectedItem().toString();	
+				String[] newSize = temp.split("x");
+				filePathInput = "input/"+newSize[0]+newSize[1]+"/1.txt";
+				System.out.println(filePathInput);
 			}
-		}
-		int currentEdge = firstEdge;
-		int d = (HEIGHT + 1) * WIDTH + (WIDTH + 1) * HEIGHT;
-		int k = (HEIGHT + 1) * WIDTH;
-		int vertexX, vertexY;
-		while (true) {
-			if (currentEdge > d + k) {
-				vertexX = (currentEdge - d - k) / (WIDTH + 1);
-				vertexY = (currentEdge - d - k) % (WIDTH + 1) - 1;
-				if (vertexY < 0) {
-					vertexY += WIDTH + 1;
-					vertexX--;
-				}
-			} else if (currentEdge > d) {
-				vertexX = (currentEdge - d) / WIDTH;
-				vertexY = (currentEdge - d) % WIDTH - 1;
-				if (vertexY < 0) {
-					vertexY += WIDTH;
-					vertexX--;
-				}
-			} else if (currentEdge > k) {
-				vertexX = (currentEdge - k) / (WIDTH + 1) + 1;
-				vertexY = (currentEdge - k) % (WIDTH + 1) - 1;
-				if (vertexY < 0) {
-					vertexY += WIDTH + 1;
-					vertexX--;
-				}
-			} else {
-				vertexX = currentEdge / (WIDTH);
-				vertexY = currentEdge % WIDTH;
-				if (vertexY == 0) {
-					vertexY += WIDTH;
-					vertexX--;
-				}
-			}
-			int toUp, toRight, toDown, toLeft;
-			toUp = SatEncode.e5(vertexX, vertexY);
-			toRight = SatEncode.e6(vertexX, vertexY);
-			toDown = SatEncode.e7(vertexX, vertexY);
-			toLeft = SatEncode.e8(vertexX, vertexY);
-			if (toUp != -1 && toUp != currentEdge && edge[toUp - 1] > 0) {
-				currentEdge = toUp;
-				count++;
-			} else if (toRight != -1 && toRight != currentEdge
-					&& edge[toRight - 1] > 0) {
-				currentEdge = toRight;
-				count++;
-			} else if (toDown != -1 && toDown != currentEdge
-					&& edge[toDown - 1] > 0) {
-				currentEdge = toDown;
-				count++;
-			} else if (toLeft != -1 && toLeft != currentEdge
-					&& edge[toLeft - 1] > 0) {
-				currentEdge = toLeft;
-				count++;
-			} else
-				break;
-			if (currentEdge == firstEdge) {
-				count--;
-				break;
-			}
-		}
-		int totalEdge = 0;
-		for (int i = 0; i < edge.length; i++) {
-			if (edge[i] > 0)
-				totalEdge++;
-		}
-		if (count == totalEdge && currentEdge == firstEdge)
-			return true;
-		else
-			return false;
+		});
 	}
 
 	public void readInputFile() {
@@ -654,145 +566,41 @@ public class MainFrame {
 
 	}
 
-	int[] e(int edgeCode) {
-		int[] e = new int[3];
-		int d = WIDTH * (HEIGHT + 1) + (WIDTH + 1) * HEIGHT;
-		int k = WIDTH * (HEIGHT + 1);
 
-		if (edgeCode > d) {
-			edgeCode -= d;
-		}
-		if (edgeCode <= k) {
-			if (edgeCode % HEIGHT == 0) {
-				e[0] = edgeCode / HEIGHT - 1;
-				e[1] = HEIGHT - 1;
-				e[2] = 0;
-			} else {
-				e[0] = edgeCode / HEIGHT;
-				e[1] = edgeCode % HEIGHT - 1;
-				e[2] = 0;
-			}
-		} else {
-			edgeCode = edgeCode - k;
-			if ((edgeCode % (HEIGHT + 1)) == 0) {
-				e[0] = edgeCode / (HEIGHT + 1) - 1;
-				e[1] = HEIGHT;
-				e[2] = 1;
-			} else {
-				e[0] = edgeCode / (HEIGHT + 1);
-				e[1] = edgeCode % (HEIGHT + 1) - 1;
-				e[2] = 1;
-			}
-		}
-
-		return e;
-	}
-
-	public void solveNext() {
-		writeInput = new WriteInput(val);
-		writeInput.writeToFile(cnfInput);
-		satSolver = new SatSolver();
-		
-		while (true) {
-			String[] a = satSolver.getString().split(" ");
-			ArrayList<Integer> b = new ArrayList<Integer>();
-			for (int i = 0; i < a.length - 1; i++) {
-				Integer temp = Integer.parseInt(a[i]);
-				b.add(-temp);
-			}
-
-			writeInput.addFoundOutput(b);
-			writeInput.writeToFile(cnfInput);
-			satSolver = new SatSolver();
-			String[] stringDecoded = satSolver.getString().split(" ");
-			int[] numbers = new int[stringDecoded.length-1];
-			for (int i=0;i<stringDecoded.length-1;i++){
-				numbers[i] = Integer.parseInt(stringDecoded[i]);
-			}
-//			System.out.print("\n"+satSolver.getString()+"\n");
-//			System.out.print("Thoa man:"+checkLoop(numbers)+"\n\n\n");
-			if (checkLoop(numbers))
-			{
-				repaintCanvas(stringDecoded);
-				break;
-			}
-		}
-	}
+	// public void solveNext() {
+	// writeInput = new WriteInput(val);
+	// writeInput.writeToFile(cnfInput);
+	// satSolver = new SatSolver();
+	//
+	// while (true) {
+	// String[] a = satSolver.getString().split(" ");
+	// ArrayList<Integer> b = new ArrayList<Integer>();
+	// for (int i = 0; i < a.length - 1; i++) {
+	// Integer temp = Integer.parseInt(a[i]);
+	// b.add(-temp);
+	// }
+	//
+	// writeInput.addFoundOutput(b);
+	// writeInput.writeToFile(cnfInput);
+	// satSolver = new SatSolver();
+	// String[] stringDecoded = satSolver.getString().split(" ");
+	// int[] numbers = new int[stringDecoded.length-1];
+	// for (int i=0;i<stringDecoded.length-1;i++){
+	// numbers[i] = Integer.parseInt(stringDecoded[i]);
+	// }
+	// if (myCanvas.checkLoop(numbers))
+	// {
+	// myCanvas.repaintCanvas(stringDecoded);
+	// break;
+	// }
+	// }
+	// }
 
 	public void solve() {
-
 		writeInput.writeToFile(cnfInput);
 		satSolver = new SatSolver();
 		String[] stringDecoded = satSolver.getString().split(" ");
-		repaintCanvas(stringDecoded);
+		myCanvas.repaintCanvas(stringDecoded);
 	}
-
-	private void repaintCanvas(String[] stringDecoded) {
-
-		clearArray(myCanvas.getColDownArr(), WIDTH, HEIGHT + 1);
-		clearArray(myCanvas.getRowRightArr(), WIDTH + 1, HEIGHT);
-
-		// doc output, chuyen String thanh array int,
-		ArrayList<Integer> b = new ArrayList<Integer>();
-		for (int i = 0; i < stringDecoded.length - 1; i++) {
-			b.add(Integer.parseInt(stringDecoded[i]));
-			// System.out.println(Integer.parseInt(stringDecoded[i])+" ");
-		}
-		for (int i = 0; i < b.size(); i++) {
-			int edgeCode = Math.abs(b.get(i));
-			if (b.get(i) == edgeCode) {
-
-				// if(edgeCode==36) System.out.println(e(edgeCode)[0] +" "+
-				// e(edgeCode)[1]);
-
-				if (e(edgeCode)[2] == 0) {
-					// System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
-
-					myCanvas.getRowRightArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
-				} else if (e(edgeCode)[2] == 1) {
-					// System.out.println(edgeCode+" "+e(edgeCode)[0]+" "+e(edgeCode)[1]);
-
-					myCanvas.getColDownArr()[e(edgeCode)[0]][e(edgeCode)[1]] = true;
-				}
-			}
-		}
-		myCanvas.setPreferredSize(area);
-		myCanvas.validate();
-		myCanvas.repaint();
-		myCanvas.setPreferredSize(area);
-	}
-
-	private void appendStringToFile(File file, String text) {
-		try {
-			FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
-			BufferedWriter bw = new BufferedWriter(fw);
-			bw.newLine();
-			bw.append(text);
-			bw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void writeStringToFile(File file, String text) {
-		try {
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(text);
-			bw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	void clearArray(boolean[][] a, int r, int c) {
-		for (int i = 0; i < r; i++) {
-			for (int j = 0; j < c; j++) {
-				a[i][j] = false;
-			}
-		}
-	}
+	
 }

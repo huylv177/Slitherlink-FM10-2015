@@ -33,9 +33,10 @@ public class SatSolver {
         Reader reader = new DimacsReader(solver);
         // CNF filename is given on the command line 
         try {
-        	RESULT_CODE=1;
+        	
             IProblem problem = reader.parseInstance("cnf/input.cnf");
             if (problem.isSatisfiable()) {
+            	RESULT_CODE=1;
                 System.out.println("Satisfiable !");
                 stringDecoded=reader.decode(problem.model());
                 MainFrame.textPaneOutput.setText(stringDecoded);

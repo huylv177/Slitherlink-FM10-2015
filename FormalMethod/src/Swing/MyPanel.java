@@ -8,15 +8,16 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
+
+import MainPackage.SatEncode;
 
 public class MyPanel extends JPanel implements MouseListener {
 	// w la so cot, h la so hang
 	int w, h;
 
-	// tuong tu class Main
-	// boolean[][][] m;
 	boolean[][] rowRight, rowLeft, colUp, colDown;
 	int[][] val;
 
@@ -202,6 +203,76 @@ public class MyPanel extends JPanel implements MouseListener {
 			}
 			k++;
 		}
+	}
+	public void repaintCanvas(String[] stringDecoded) {
+
+		clearArray(colDown, w, h + 1);
+		clearArray(rowRight, w + 1, w);
+
+		// doc output, chuyen String thanh array int,
+		ArrayList<Integer> b = new ArrayList<Integer>();
+		for (int i = 0; i < stringDecoded.length - 1; i++) {
+			b.add(Integer.parseInt(stringDecoded[i]));
+			// System.out.println(Integer.parseInt(stringDecoded[i])+" ");
+		}
+		for (int i = 0; i < b.size(); i++) {
+			int edgeCode = Math.abs(b.get(i));
+			
+			if (b.get(i) == edgeCode) {
+				int[] temp = decodeEdge(edgeCode);
+//				 if(edgeCode==3) System.out.println(temp[0] +" "+temp[1]+" "+temp[2]);
+
+				if (temp[2] == 0) {
+					rowRight[temp[0]][temp[1]] = true;
+				} else if (temp[2] == 1) {
+					colDown[temp[0]][temp[1]] = true;
+				}
+			}
+		}
+		setPreferredSize(new Dimension((w+2)*SIZE_BOX,(h+2)*SIZE_BOX));
+		repaint();
+	}
+	
+	void clearArray(boolean[][] a, int r, int c) {
+		for (int i = 0; i < r; i++) {
+			for (int j = 0; j < c; j++) {
+				a[i][j] = false;
+			}
+		}
+	}
+	
+	int[] decodeEdge(int edgeCode) {
+		int[] e = new int[3];
+		int d = w * (h + 1) + (w + 1) * h;
+		int k = w * (h + 1);
+
+		if (edgeCode > d) {
+			edgeCode -= d;
+		}
+		if (edgeCode <= k) {
+			if (edgeCode % h == 0) {
+				e[0] = edgeCode / h - 1;
+				e[1] = h - 1;
+				e[2] = 0;
+			} else {
+				e[0] = edgeCode / h;
+				e[1] = edgeCode % h - 1;
+				e[2] = 0;
+			}
+		} else {
+			edgeCode = edgeCode - k;
+			if ((edgeCode % (h + 1)) == 0) {
+				e[0] = edgeCode / (h + 1) - 1;
+				e[1] = h;
+				e[2] = 1;
+			} else {
+				e[0] = edgeCode / (h + 1);
+				e[1] = edgeCode % (h + 1) - 1;
+				e[2] = 1;
+			}
+		}
+
+		return e;
 	}
 
 }
