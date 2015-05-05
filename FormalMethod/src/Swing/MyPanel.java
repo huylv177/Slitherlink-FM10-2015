@@ -29,6 +29,11 @@ public class MyPanel extends JPanel implements MouseListener {
 	int[][] cp;
 
 	public MyPanel(int w, int h, int[][] val) {
+		init(w,h,val);
+		addMouseListener(this);
+		genClickPoint();
+	}
+	public void init(int w, int h, int[][] val){
 		this.val = val;
 		this.w = w;
 		this.h = h;
@@ -41,10 +46,7 @@ public class MyPanel extends JPanel implements MouseListener {
 		SIZE_BOX = MainFrame.SIZE_BOX;
 
 		setPreferredSize(null);
-		setBackground(new Color(222, 222, 222));
-		addMouseListener(this);
-
-		genClickPoint();
+		setBackground(Color.cyan);
 	}
 
 	boolean[][] getRowLeftArr() {

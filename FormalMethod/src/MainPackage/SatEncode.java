@@ -7,20 +7,96 @@ import Swing.MainFrame;
 public class SatEncode {
 
 	private ArrayList<String> text;
+	private int[][][] v; // mang dinh 3 chieu
 	private int[][] val;
 	private static int w;
 	private static int h;
 	static int d;
 	static int k;
-
+	
+	
+	
 	public SatEncode(int[][] val) {
 		w = MainFrame.WIDTH;
 		h = MainFrame.HEIGHT;
 		this.val = val;
 		d = (w + 1) * h + w * (h + 1);
 		k = w * (h + 1);
+		
+		int bitN = 2 * bitNumber() + 1;
+		v = new int[w+1][h+1][bitN];
+		
+		int value = 2*((w+1)*h + w*(h+1))+1;
+		
+		for (int i = 0; i < w+1; i++) {
+            for (int j = 0; j < h+1; j++) {
+                for (int k = 1; k < bitN; k++) {
+                    v[i][j][k] = value;
+                    
+                    value++;
+                }
+            }
+        
+        }
+		
 	}
+	
+	
+	private static int bitNumber(){
+		int bit = 5;
+		int mn  = (w+1)*(h+1);
+		while(Math.pow(2,bit)-1 < mn){
+			bit++;
+		}
+		return bit;
+	}
+	
+	// set Array Bit
+	public int[] setArrayBit(int m, int n,int z){
+		int _bitNumber=bitNumber();
+		int[] arrBit = new int[_bitNumber];
+        int i = 0;
+        for (int k = z; k < z + _bitNumber; k++) {
+            arrBit[i] = v[m][n][k];
+//            System.out.println("v("+w+","+h+","+k+") "+i+" "+arrBit[i]);
+            i++;
+        }
+        return arrBit;
+	}
+	
+	//---------- a = b+ 1 ( with c ) ----------//
+    public void bitAddition(int z, int[] a, int[] b, int[] c) {
+        int i, j, t;
+        for (i = 0; i < bitNumber(); i++) {
+            if (i == 0) {
+                t = 1;
+            } else {
+                t = -1;
+            }
+            //z là mã biến của cạnh x1, x2, x3, x4.....
+            
+            // a[0] = -b[0] =>  cnf (-a[0] v b[0]) ^ (a[0] v b[0])
+            text.add(t * a[i] + " " + -a[0] + " " + -b[0] + " "+ -z);
+            text.add(t * a[i] + " " + a[0] + " " + b[0] +" "+ -z);
+            
+            //
+            text.add(t * a[i] + " " + b[0] + " " + -c[0] +" "+ -z);
+            text.add(t * a[i] + " " + c[0] + " " + -b[0] +" "+ -z);
 
+            //------------------------------// 
+            for (j = 1; j < bitNumber(); j++) {
+            	text.add(t * a[i] + " " + -c[j] + " " + b[j] +" "+ -z);
+            	text.add(t * a[i] + " " + -c[j] + " " + c[j - 1] +" "+ -z);
+            	text.add(t * a[i] + " " + c[j] + " " + -c[j - 1] + " " + -b[j] +" "+ -z);
+            	
+            	text.add(t * a[i] + " " + -a[j] + " " + b[j] + " " + c[j - 1] +" "+ -z);
+            	text.add(t * a[i] + " " + a[j] + " " + -b[j] + " " + c[j - 1] +" "+ -z);
+            	text.add(t * a[i] + " " + a[j] + " " + b[j] + " " + -c[j - 1] +" "+ -z);
+                text.add(t * a[i] + " " + -a[j] + " " + -b[j] + " " + -c[j - 1] +" "+ -z);
+            }
+        }
+    }
+    //------------------------------// 
 	public void encode() {
 		text = new ArrayList<String>();
 		for (int i = 0; i < h; i++) {
@@ -169,7 +245,20 @@ public class SatEncode {
 							+ " -" + dr(i, j));
 					text.add("-" + ru(i, j) + " -" + ul(i, j) + " -" + lu(i, j)
 							+ " -" + dl(i, j));
+					
+					
+					if(i==0 && j==0){
+						text.add(lu(i,j)+" ");
+						text.add(ur(i,j)+" ");
+						if(val[i+1][j+1]== 3){
+							text.add(dr(i+1,j+1)+" ");
+							text.add(ru(i+1,j+1)+" ");
+						}
+					}
+					
 
+					
+					
 					break;
 				case 4:
 					text.add(String.valueOf(rd(i, j)));
@@ -185,7 +274,7 @@ public class SatEncode {
 			}
 		}
 		
-		//encode cũ
+		//encode cÅ©
 //		for(int i=0;i<w+1;i++){
 //			for(int j=0;j<h+1;j++){
 ////				if(i==5 && j==5){
@@ -314,8 +403,53 @@ public class SatEncode {
 				
 			}
 		}
+	SingleLoop();
 	}
+    //------------------------------// 
+    //Một vòng duy nhất//
+    public void SingleLoop() {
+        int i, j, k, t, u;
+        for (i = 0; i < w+1; i++) {
+            for (j = 0; j < h+1; j++) {
+//            	System.out.println(i+ " " + j + " " +e1(i,j));
+                if (e1(i,j) != -1) {
+                    bitAddition(e1(i,j), setArrayBit(i, j, 1), setArrayBit(i - 1, j, 1), setArrayBit(i, j, 1 + bitNumber()));
+                }
+                if (e2(i,j) != -1) {
+                    bitAddition(e2(i,j), setArrayBit(i, j, 1), setArrayBit(i, j + 1, 1), setArrayBit(i, j, 1 + bitNumber()));
+                }
+                if (e3(i,j) != -1) {
+                    bitAddition(e3(i,j), setArrayBit(i, j, 1), setArrayBit(i + 1, j, 1), setArrayBit(i, j, 1 + bitNumber()));
+                }
+                if (e4(i,j) != -1) {
+                    bitAddition(e4(i,j), setArrayBit(i, j, 1), setArrayBit(i, j - 1, 1), setArrayBit(i, j, 1 + bitNumber()));
+                }
+            }
+        }
 
+//        //------------------------------// 
+//        //chỉ có duy nhất một đỉnh được đánh số 1//
+        for (i = 0; i < w+1; i++) {
+            for (j = 0; j < h+1; j++) {
+                for (k = 0; k < w+1; k++) {
+                    for (t = 0; t < h+1; t++) {
+                        if (i != k || j != t) {
+                            String valueOne = "";
+                            valueOne += Integer.toString(-v[i][j][1]) + " " + Integer.toString(-v[k][t][1]);
+                            for (u = 2; u < 1 + bitNumber(); u++) {
+                                valueOne += " " + v[i][j][u] + " " + v[k][t][u];
+                            }
+                            text.add(valueOne);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+   
+
+	//------------------------------//  
 	public ArrayList<String> getTextEncoded() {
 		return text;
 	}

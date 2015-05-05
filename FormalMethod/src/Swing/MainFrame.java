@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.CancellationException;
 
@@ -18,11 +19,13 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -38,7 +41,8 @@ import MainPackage.WriteInput;
 import javax.swing.JInternalFrame;
 
 
-public class MainFrame {
+
+public class MainFrame implements ActionListener {
 
 	private JFrame frame;
 	private MyPanel myCanvas;
@@ -52,13 +56,21 @@ public class MainFrame {
 	JLabel lblStatus;
 	SolveThread solveThread;
 	NewGameFrame newGameFrame;
+	JButton btnCheck;
+	JButton btCancel;
+	JMenuItem mntmNewGame;
+	JMenuItem mntmOpen;
+	JButton btnClear;
+	JButton btnSolve;
+	JLabel lblEncodeTime;
+	JLabel lblSolveTime;
+	JButton btnFind;
 	
 	public JLabel lblTotalTime;
 //	JLabel timerLabel;
 	
-	private String filePathInput = "input/55/2.txt";
+	private String filePathInput = "input/77/1.txt";
 	public static String cnfInput = "cnf/input.cnf";
-	private String cnfOutputs = "cnf/outputs.cnf";
 
 	// kich thuoc theo pixel
 	int CANVAS_HEIGHT;
@@ -185,11 +197,11 @@ public class MainFrame {
 
 		JLabel lblEncodeTime1 = new JLabel("Encode Time:");
 
-		JLabel lblEncodeTime = new JLabel("--:--");
+		lblEncodeTime = new JLabel("--:--");
 
 		JLabel lblSolveTime1 = new JLabel("Solve Time:");
 
-		JLabel lblSolveTime = new JLabel("--:--");
+		lblSolveTime = new JLabel("--:--");
 
 		JLabel lblTotalTime1 = new JLabel("Total Time:");
 
@@ -325,18 +337,14 @@ public class MainFrame {
 		JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 
-		JMenuItem mntmNewGame = new JMenuItem("New game");
-		mntmNewGame.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				newGameFrame.setVisible(true);
-			}
-		});
+		mntmNewGame = new JMenuItem("New game");
+		mntmNewGame.addActionListener(this);
 		mnFile.add(mntmNewGame);
 
-		JMenuItem mntmOpen = new JMenuItem("Open");
+		mntmOpen = new JMenuItem("Open");
 		mnFile.add(mntmOpen);
-
+		mntmOpen.addActionListener(this);
+		
 		JMenuItem mntmQuit = new JMenuItem("Quit");
 		mnFile.add(mntmQuit);
 
@@ -354,7 +362,6 @@ public class MainFrame {
 
 		myCanvas = new MyPanel(WIDTH, HEIGHT, val);
 		myCanvas.setLayout(new BorderLayout());
-		myCanvas.setBackground(Color.cyan);
 
 		// Put the drawing area in a scroll pane.
 		JScrollPane scroller = new JScrollPane(myCanvas);
@@ -379,18 +386,15 @@ public class MainFrame {
 
 		lblStatus = new JLabel("Not correct");
 
-		JButton btnClear = new JButton("Clear");
+		btnClear = new JButton("Clear");
 		btnClear.setToolTipText("Clear game");
-		btnClear.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
+		btnClear.addActionListener(this);
 
-		JButton btnCheck = new JButton("Check");
+		btnCheck = new JButton("Check");
 
-		JButton btnSolve = new JButton("Solve");
+		btnSolve = new JButton("Solve");
 
-		JButton btnFind = new JButton("Solve Now");
+		btnFind = new JButton("Solve Now");
 		GroupLayout gl_p3 = new GroupLayout(p3);
 		gl_p3.setHorizontalGroup(
 			gl_p3.createParallelGroup(Alignment.TRAILING)
@@ -448,7 +452,7 @@ public class MainFrame {
 
 		
 		
-		JButton btCancel = new JButton("Cancel");
+		btCancel = new JButton("Cancel");
 //		timerLabel = new JLabel("0");
 		loadingDialog = new JDialog(frame, "Progress Dialog", true);
         JProgressBar dpb = new JProgressBar(0, 100);
@@ -460,82 +464,16 @@ public class MainFrame {
         loadingDialog.setSize(200, 80);
         loadingDialog.setLocationRelativeTo(frame);
 
-		btCancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				try{
-				solveThread.cancel(true);
-				}catch(CancellationException e){
-					System.out.println(e.getMessage());
-				}
-			}
-		});
+		btCancel.addActionListener(this);
+		btnCheck.addActionListener(this);
 		
-		btnClear.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				for (int i = 0; i < HEIGHT + 1; i++) {
-					for (int j = 0; j < WIDTH; j++) {
-						// myCanvas.getRowLeftArr()[i][j] = false;
-						// myCanvas.getRowRightArr()[i][j] = false;
-					}
-				}
-				for (int i = 0; i < HEIGHT; i++) {
-					for (int j = 0; j < WIDTH + 1; j++) {
-						// myCanvas.getColUpArr()[i][j] = false;
-						// myCanvas.getColDownArr()[i][j] = false;
-					}
-				}
-				myCanvas.repaint();
-			}
-		});
-		btnSolve.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				writeInput = new WriteInput(val);
-				Long beforeEncode = System.currentTimeMillis();
-				writeInput.writeToFile(cnfInput);
-				Long afterEncode = System.currentTimeMillis();
-				float encodeTime = ((float) (afterEncode - beforeEncode)) / 1000;
-				lblEncodeTime.setText("" + encodeTime);
-				// System.out.println("encode Time:"+encodeTime);
-
-				Long beforeSolve = System.currentTimeMillis();
-				satSolver = new SatSolver();
-				Long afterSolve = System.currentTimeMillis();
-				float solveTime = ((float) (afterSolve - beforeSolve)) / 1000;
-				lblSolveTime.setText("" + solveTime);
-				// System.out.println("solve Time:" +solveTime);
-				lblTotalTime.setText("" + (solveTime + encodeTime));
-
-				String[] stringDecoded = satSolver.getString().split(" ");
-				myCanvas.repaintCanvas(stringDecoded);
-			}
-		});
-		btnFind.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				long start = System.currentTimeMillis();
-				solveThread = new SolveThread(loadingDialog,val,myCanvas,start,lblTotalTime,lblStatus);
-				solveThread.execute();
-				loadingDialog.setVisible(true);
-			}
-		});
-
-		newGameFrame.btnOk.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String temp = newGameFrame.comboBox.getSelectedItem().toString();	
-				String[] newSize = temp.split("x");
-				filePathInput = "input/"+newSize[0]+newSize[1]+"/1.txt";
-				System.out.println(filePathInput);
-			}
-		});
+		btnSolve.addActionListener(this);
+		btnFind.addActionListener(this);
+		newGameFrame.btnOk.addActionListener(this);
+		newGameFrame.btnCancel.addActionListener(this);
 	}
 
 	public void readInputFile() {
-		File fileInput = new File(cnfInput);
-		File fileOutputs = new File(cnfOutputs);
 		Path filePath = Paths.get(filePathInput);
 		Scanner scanner = null;
 		try {
@@ -601,6 +539,78 @@ public class MainFrame {
 		satSolver = new SatSolver();
 		String[] stringDecoded = satSolver.getString().split(" ");
 		myCanvas.repaintCanvas(stringDecoded);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource()==btnCheck){
+		}
+		else if(e.getSource()==newGameFrame.btnCancel){
+			newGameFrame.setVisible(false);
+		}
+		else if(e.getSource()==newGameFrame.btnOk){
+			String temp = newGameFrame.comboBox.getSelectedItem().toString();	
+			String[] newSize = temp.split("x");
+			filePathInput = "input/"+newSize[0]+newSize[1]+"/1.txt";
+			System.out.println(filePathInput);
+			newGameFrame.setVisible(false);
+		}
+		else if(e.getSource()==btnFind){
+			long start = System.currentTimeMillis();
+			solveThread = new SolveThread(loadingDialog,val,myCanvas,start,lblTotalTime,lblStatus);
+			solveThread.execute();
+			loadingDialog.setVisible(true);
+		}
+		else if(e.getSource()==btnSolve){
+			writeInput = new WriteInput(val);
+			Long beforeEncode = System.currentTimeMillis();
+			writeInput.writeToFile(cnfInput);
+			Long afterEncode = System.currentTimeMillis();
+			float encodeTime = ((float) (afterEncode - beforeEncode)) / 1000;
+			lblEncodeTime.setText("" + encodeTime);
+			// System.out.println("encode Time:"+encodeTime);
+
+			Long beforeSolve = System.currentTimeMillis();
+			satSolver = new SatSolver();
+			Long afterSolve = System.currentTimeMillis();
+			float solveTime = ((float) (afterSolve - beforeSolve)) / 1000;
+			lblSolveTime.setText("" + solveTime);
+			// System.out.println("solve Time:" +solveTime);
+			lblTotalTime.setText("" + (solveTime + encodeTime));
+
+			String[] stringDecoded = satSolver.getString().split(" ");
+			myCanvas.repaintCanvas(stringDecoded);
+		}
+		else if(e.getSource()==btCancel){
+			System.out.println("s");
+			try{
+				solveThread.cancel(true);
+				}catch(CancellationException ex){
+					System.out.println(ex.getMessage());
+				}
+		}
+		else if(e.getSource()==mntmNewGame){
+			newGameFrame.setVisible(true);
+		}
+		else if(e.getSource()==mntmOpen){
+			JFileChooser fc = new JFileChooser();
+			int returnVal = fc.showOpenDialog(this.frame);
+
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = fc.getSelectedFile();
+                file.getName().lastIndexOf(".");
+                if(file.getName().substring(file.getName().lastIndexOf(".")+1, file.getName().length()).equals("txt")){
+                	filePathInput=file.getPath();
+                	readInputFile();
+                	myCanvas.init(WIDTH, HEIGHT, val);
+                	myCanvas.repaint();
+                }
+                else{
+                	JOptionPane.showMessageDialog(frame, "Wrong file!");
+                }
+            } else {
+            }
+		}
 	}
 	
 }

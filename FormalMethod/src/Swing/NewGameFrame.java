@@ -24,6 +24,7 @@ public class NewGameFrame extends JFrame  {
 	private JPanel contentPane;
 	JComboBox comboBox;
 	JButton btnOk;
+	JButton btnCancel;
 	
 //	public static void main(String[] args) {
 //		EventQueue.invokeLater(new Runnable() {
@@ -63,7 +64,7 @@ public class NewGameFrame extends JFrame  {
 		
 		btnOk = new JButton("OK");
 		
-		JButton btnCancel = new JButton("Cancel");
+		btnCancel = new JButton("Cancel");
 		
 		JRadioButton rdbtnMedium = new JRadioButton("Medium");
 		
