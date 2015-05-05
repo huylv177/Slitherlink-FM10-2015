@@ -46,8 +46,6 @@ public class MainFrame implements ActionListener {
 	private SatSolver satSolver;
 	public static JTextArea textPaneInput;
 	public static JTextArea textPaneOutput;
-	public static JLabel lblNumOfVariable;
-	public static JLabel lblNumOfClause;
 	public JDialog loadingDialog;
 	JLabel lblStatus;
 	SolveThread solveThread;
@@ -58,14 +56,16 @@ public class MainFrame implements ActionListener {
 	JMenuItem mntmOpen;
 	JButton btnClear;
 	JButton btnSolve;
-	JLabel lblEncodeTime;
-	JLabel lblSolveTime;
 	JButton btnFind;
 	JMenuItem mntmQuit;
 	JLabel lblInputCode;
-	
-	public JLabel lblTotalTime;
-//	JLabel timerLabel;
+	JLabel lblEncodeTime;
+	JLabel lblSolveTime;
+	JLabel lblTotalTime;
+	public static JLabel lblNumOfVariable;
+	public static JLabel lblNumOfClause;
+	JButton btnNewRandomGame;
+	JLabel lblSize;
 	
 	private String filePathInput = "input/4x4/1.txt";
 	public static String cnfInput = "cnf/input.cnf";
@@ -105,7 +105,7 @@ public class MainFrame implements ActionListener {
 
 		newGameFrame = new NewGameFrame();
 		frame = new JFrame();
-		frame.setBounds(100, 100, 600, 484);
+		frame.setBounds(100, 100, 600, 483);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -192,140 +192,15 @@ public class MainFrame implements ActionListener {
 
 		JPanel panel_2 = new JPanel();
 		panel2.add(panel_2);
-
-		JLabel lblEncodeTime1 = new JLabel("Encode Time:");
-
-		lblEncodeTime = new JLabel("--:--");
-
-		JLabel lblSolveTime1 = new JLabel("Solve Time:");
-
-		lblSolveTime = new JLabel("--:--");
-
-		JLabel lblTotalTime1 = new JLabel("Total Time:");
-
-		lblTotalTime = new JLabel("--:--");
-
-		JLabel lblNumOfVariable1 = new JLabel("Num of variable:");
-
-		lblNumOfVariable = new JLabel("0");
-
-		JLabel lblNumOfClause1 = new JLabel("Num of clause:");
-
-		lblNumOfClause = new JLabel("0");
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
-		gl_panel_2
-				.setHorizontalGroup(gl_panel_2
-						.createParallelGroup(Alignment.LEADING)
-						.addGroup(
-								gl_panel_2
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												gl_panel_2
-														.createParallelGroup(
-																Alignment.LEADING)
-														.addGroup(
-																gl_panel_2
-																		.createSequentialGroup()
-																		.addComponent(
-																				lblEncodeTime1)
-																		.addPreferredGap(
-																				ComponentPlacement.RELATED)
-																		.addComponent(
-																				lblEncodeTime))
-														.addGroup(
-																gl_panel_2
-																		.createParallelGroup(
-																				Alignment.LEADING)
-																		.addGroup(
-																				gl_panel_2
-																						.createSequentialGroup()
-																						.addComponent(
-																								lblSolveTime1)
-																						.addPreferredGap(
-																								ComponentPlacement.RELATED)
-																						.addComponent(
-																								lblSolveTime))
-																		.addGroup(
-																				gl_panel_2
-																						.createSequentialGroup()
-																						.addComponent(
-																								lblTotalTime1)
-																						.addPreferredGap(
-																								ComponentPlacement.RELATED)
-																						.addComponent(
-																								lblTotalTime)))
-														.addGroup(
-																gl_panel_2
-																		.createSequentialGroup()
-																		.addComponent(
-																				lblNumOfVariable1)
-																		.addPreferredGap(
-																				ComponentPlacement.RELATED)
-																		.addComponent(
-																				lblNumOfVariable))
-														.addGroup(
-																gl_panel_2
-																		.createSequentialGroup()
-																		.addComponent(
-																				lblNumOfClause1)
-																		.addPreferredGap(
-																				ComponentPlacement.RELATED)
-																		.addComponent(
-																				lblNumOfClause)))
-										.addContainerGap(92, Short.MAX_VALUE)));
-		gl_panel_2
-				.setVerticalGroup(gl_panel_2
-						.createParallelGroup(Alignment.LEADING)
-						.addGroup(
-								gl_panel_2
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												gl_panel_2
-														.createParallelGroup(
-																Alignment.BASELINE)
-														.addComponent(
-																lblEncodeTime)
-														.addComponent(
-																lblEncodeTime1))
-										.addGap(18)
-										.addGroup(
-												gl_panel_2
-														.createParallelGroup(
-																Alignment.BASELINE)
-														.addComponent(
-																lblSolveTime1)
-														.addComponent(
-																lblSolveTime))
-										.addGap(18)
-										.addGroup(
-												gl_panel_2
-														.createParallelGroup(
-																Alignment.BASELINE)
-														.addComponent(
-																lblTotalTime1)
-														.addComponent(
-																lblTotalTime))
-										.addGap(18)
-										.addGroup(
-												gl_panel_2
-														.createParallelGroup(
-																Alignment.BASELINE)
-														.addComponent(
-																lblNumOfVariable1)
-														.addComponent(
-																lblNumOfVariable))
-										.addGap(18)
-										.addGroup(
-												gl_panel_2
-														.createParallelGroup(
-																Alignment.BASELINE)
-														.addComponent(
-																lblNumOfClause1)
-														.addComponent(
-																lblNumOfClause))
-										.addContainerGap(243, Short.MAX_VALUE)));
+		gl_panel_2.setHorizontalGroup(
+			gl_panel_2.createParallelGroup(Alignment.LEADING)
+				.addGap(0, 193, Short.MAX_VALUE)
+		);
+		gl_panel_2.setVerticalGroup(
+			gl_panel_2.createParallelGroup(Alignment.LEADING)
+				.addGap(0, 396, Short.MAX_VALUE)
+		);
 		panel_2.setLayout(gl_panel_2);
 		frame.getContentPane().setLayout(groupLayout);
 
@@ -369,12 +244,12 @@ public class MainFrame implements ActionListener {
 		JPanel p3 = new JPanel();
 		panel1.add(p3, BorderLayout.EAST);
 
-		JButton btnNewGame = new JButton("New Puzzle");
-		btnNewGame.setToolTipText("Play a new random puzzle");
+		btnNewRandomGame = new JButton("New Puzzle");
+		btnNewRandomGame.setToolTipText("Play a new random puzzle");
 
 		JLabel lblNewLabel = new JLabel("Size:");
 
-		JLabel lblSize = new JLabel(WIDTH + "x" + HEIGHT);
+		lblSize = new JLabel(WIDTH + "x" + HEIGHT);
 
 		JLabel lblInputCode1 = new JLabel("Input code:");
 
@@ -393,13 +268,33 @@ public class MainFrame implements ActionListener {
 		btnSolve = new JButton("Solve");
 
 		btnFind = new JButton("Solve Now");
+		
+		JLabel label = new JLabel("Encode Time:");
+		
+		lblEncodeTime = new JLabel("--:--");
+		
+		JLabel label_2 = new JLabel("Solve Time:");
+		
+		lblSolveTime = new JLabel("--:--");
+		
+		JLabel label_4 = new JLabel("Total Time:");
+		
+		lblTotalTime = new JLabel("--:--");
+		
+		JLabel label_6 = new JLabel("Num of variable:");
+		
+		lblNumOfVariable = new JLabel("0");
+		
+		JLabel label_8 = new JLabel("Num of clause:");
+		
+		lblNumOfClause = new JLabel("0");
 		GroupLayout gl_p3 = new GroupLayout(p3);
 		gl_p3.setHorizontalGroup(
 			gl_p3.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_p3.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_p3.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnNewGame, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+						.addComponent(btnNewRandomGame, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
 						.addGroup(gl_p3.createSequentialGroup()
 							.addComponent(lblNewLabel)
 							.addPreferredGap(ComponentPlacement.RELATED)
@@ -415,7 +310,27 @@ public class MainFrame implements ActionListener {
 						.addComponent(btnClear, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
 						.addComponent(btnCheck, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
 						.addComponent(btnSolve, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-						.addComponent(btnFind, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE))
+						.addComponent(btnFind, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+						.addGroup(gl_p3.createSequentialGroup()
+							.addComponent(label, GroupLayout.PREFERRED_SIZE, 64, GroupLayout.PREFERRED_SIZE)
+							.addGap(6)
+							.addComponent(lblEncodeTime, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_p3.createSequentialGroup()
+							.addComponent(label_2, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
+							.addGap(6)
+							.addComponent(lblSolveTime, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_p3.createSequentialGroup()
+							.addComponent(label_4, GroupLayout.PREFERRED_SIZE, 53, GroupLayout.PREFERRED_SIZE)
+							.addGap(6)
+							.addComponent(lblTotalTime, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_p3.createSequentialGroup()
+							.addComponent(label_6, GroupLayout.PREFERRED_SIZE, 79, GroupLayout.PREFERRED_SIZE)
+							.addGap(6)
+							.addComponent(lblNumOfVariable, GroupLayout.PREFERRED_SIZE, 6, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_p3.createSequentialGroup()
+							.addComponent(label_8, GroupLayout.PREFERRED_SIZE, 71, GroupLayout.PREFERRED_SIZE)
+							.addGap(6)
+							.addComponent(lblNumOfClause, GroupLayout.PREFERRED_SIZE, 6, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
 		gl_p3.setVerticalGroup(
@@ -434,7 +349,7 @@ public class MainFrame implements ActionListener {
 						.addComponent(lblStatus1)
 						.addComponent(lblStatus))
 					.addGap(15)
-					.addComponent(btnNewGame)
+					.addComponent(btnNewRandomGame)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnClear)
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -443,7 +358,28 @@ public class MainFrame implements ActionListener {
 					.addComponent(btnSolve)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnFind)
-					.addContainerGap(177, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(gl_p3.createParallelGroup(Alignment.LEADING)
+						.addComponent(label)
+						.addComponent(lblEncodeTime))
+					.addGap(18)
+					.addGroup(gl_p3.createParallelGroup(Alignment.LEADING)
+						.addComponent(label_2)
+						.addComponent(lblSolveTime))
+					.addGap(18)
+					.addGroup(gl_p3.createParallelGroup(Alignment.LEADING)
+						.addComponent(label_4)
+						.addComponent(lblTotalTime))
+					.addGap(18)
+					.addGroup(gl_p3.createParallelGroup(Alignment.LEADING)
+						.addComponent(label_6)
+						.addComponent(lblNumOfVariable))
+					.addGap(18)
+					.addGroup(gl_p3.createParallelGroup(Alignment.LEADING)
+						.addComponent(label_8)
+						.addComponent(lblNumOfClause))
+					.addContainerGap(320, Short.MAX_VALUE))
 		);
 
 		p3.setLayout(gl_p3);
@@ -470,7 +406,7 @@ public class MainFrame implements ActionListener {
 		mntmQuit.addActionListener(this);
 		newGameFrame.btnOk.addActionListener(this);
 		newGameFrame.btnCancel.addActionListener(this);
-		
+		btnNewRandomGame.addActionListener(this);
 	}
 
 	public void readInputFile() {
@@ -552,11 +488,16 @@ public class MainFrame implements ActionListener {
 			int random= (new Random()).nextInt(10)+1;
 			filePathInput = "input/"+newGameFrame.comboBox.getSelectedItem()+"/"+random+".txt";
 			lblInputCode.setText(random+"");
+			lblSize.setText(newGameFrame.comboBox.getSelectedItem()+"");
 			System.out.println(filePathInput);
 			readInputFile();
 			myCanvas.init(WIDTH, HEIGHT, val);
 			myCanvas.repaint();
 			newGameFrame.setVisible(false);
+		}
+		else if(e.getSource()==btnNewRandomGame){
+			newGameFrame.setVisible(true);
+			
 		}
 		else if(e.getSource()==btnFind){
 			long start = System.currentTimeMillis();
@@ -627,5 +568,4 @@ public class MainFrame implements ActionListener {
 			
 		}
 	}
-	
 }
