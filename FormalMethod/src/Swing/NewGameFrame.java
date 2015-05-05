@@ -56,7 +56,7 @@ public class NewGameFrame extends JFrame  {
 		JLabel lblChooseSize = new JLabel("Size:");
 		
 		comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"4x4", "5x5", "6x6", "7x7", "8x8", "9x9", "10x10", "15x15", "20x20", "24x14"}));
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"4x4", "5x5", "6x6", "7x7", "8x8", "9x9", "10x10", "15x15", "20x20", "24x14","unsat"}));
 		
 		JLabel lblDifficult = new JLabel("Difficult:");
 		
@@ -120,14 +120,7 @@ public class NewGameFrame extends JFrame  {
 		buttonGroup.add(rdbtnHard);
 		buttonGroup.add(rdbtnMedium);
 		buttonGroup.add(rdbtnEasy);
-		this.
 		
-		btnOk.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-//				System.out.println(comboBox.getSelectedItem()+" "+rdbtnEasy.isSelected());
-			}
-		});
 	}
 
 }

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.CancellationException;
 
@@ -33,14 +34,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import MainPackage.LoadingThread;
 import MainPackage.SatSolver;
 import MainPackage.SolveThread;
 import MainPackage.WriteInput;
-
-import javax.swing.JInternalFrame;
-
-
 
 public class MainFrame implements ActionListener {
 
@@ -65,11 +61,13 @@ public class MainFrame implements ActionListener {
 	JLabel lblEncodeTime;
 	JLabel lblSolveTime;
 	JButton btnFind;
+	JMenuItem mntmQuit;
+	JLabel lblInputCode;
 	
 	public JLabel lblTotalTime;
 //	JLabel timerLabel;
 	
-	private String filePathInput = "input/77/1.txt";
+	private String filePathInput = "input/4x4/1.txt";
 	public static String cnfInput = "cnf/input.cnf";
 
 	// kich thuoc theo pixel
@@ -345,7 +343,7 @@ public class MainFrame implements ActionListener {
 		mnFile.add(mntmOpen);
 		mntmOpen.addActionListener(this);
 		
-		JMenuItem mntmQuit = new JMenuItem("Quit");
+		mntmQuit = new JMenuItem("Quit");
 		mnFile.add(mntmQuit);
 
 		JMenu mnGame = new JMenu("Game");
@@ -380,7 +378,7 @@ public class MainFrame implements ActionListener {
 
 		JLabel lblInputCode1 = new JLabel("Input code:");
 
-		JLabel lblInputCode = new JLabel("1");
+		lblInputCode = new JLabel("1");
 
 		JLabel lblStatus1 = new JLabel("Status:");
 
@@ -469,8 +467,10 @@ public class MainFrame implements ActionListener {
 		
 		btnSolve.addActionListener(this);
 		btnFind.addActionListener(this);
+		mntmQuit.addActionListener(this);
 		newGameFrame.btnOk.addActionListener(this);
 		newGameFrame.btnCancel.addActionListener(this);
+		
 	}
 
 	public void readInputFile() {
@@ -549,10 +549,13 @@ public class MainFrame implements ActionListener {
 			newGameFrame.setVisible(false);
 		}
 		else if(e.getSource()==newGameFrame.btnOk){
-			String temp = newGameFrame.comboBox.getSelectedItem().toString();	
-			String[] newSize = temp.split("x");
-			filePathInput = "input/"+newSize[0]+newSize[1]+"/1.txt";
+			int random= (new Random()).nextInt(10)+1;
+			filePathInput = "input/"+newGameFrame.comboBox.getSelectedItem()+"/"+random+".txt";
+			lblInputCode.setText(random+"");
 			System.out.println(filePathInput);
+			readInputFile();
+			myCanvas.init(WIDTH, HEIGHT, val);
+			myCanvas.repaint();
 			newGameFrame.setVisible(false);
 		}
 		else if(e.getSource()==btnFind){
@@ -581,8 +584,14 @@ public class MainFrame implements ActionListener {
 			String[] stringDecoded = satSolver.getString().split(" ");
 			myCanvas.repaintCanvas(stringDecoded);
 		}
+		else if(e.getSource()==btnClear){
+			myCanvas.clearArray(myCanvas.colDown, HEIGHT, WIDTH+1);
+			myCanvas.clearArray(myCanvas.colUp, HEIGHT, WIDTH+1);
+			myCanvas.clearArray(myCanvas.rowLeft, HEIGHT+1, WIDTH);
+			myCanvas.clearArray(myCanvas.rowRight, HEIGHT+1,WIDTH);
+			myCanvas.repaint();
+		}
 		else if(e.getSource()==btCancel){
-			System.out.println("s");
 			try{
 				solveThread.cancel(true);
 				}catch(CancellationException ex){
@@ -608,8 +617,14 @@ public class MainFrame implements ActionListener {
                 else{
                 	JOptionPane.showMessageDialog(frame, "Wrong file!");
                 }
-            } else {
             }
+		}
+		else if(e.getSource() == mntmQuit){
+			System.exit(0);
+		}
+		
+		else if(e.getSource()==newGameFrame.btnOk){
+			
 		}
 	}
 	

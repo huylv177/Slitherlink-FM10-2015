@@ -235,7 +235,7 @@ public class MyPanel extends JPanel implements MouseListener {
 		repaint();
 	}
 	
-	void clearArray(boolean[][] a, int r, int c) {
+	public void clearArray(boolean[][] a, int r, int c) {
 		for (int i = 0; i < r; i++) {
 			for (int j = 0; j < c; j++) {
 				a[i][j] = false;
