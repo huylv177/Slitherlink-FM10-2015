@@ -7,103 +7,117 @@ import Swing.MainFrame;
 public class SatEncode {
 
 	private ArrayList<String> text;
-	private int[][][] v; // mang dinh 3 chieu
-	private int[][] val;
-	private static int w;
-	private static int h;
-	static int d;
-	static int k;
-	
-	
-	
+	private int[][] val; // mảng 2 chiều chứa giá trị trong các ô số
+	private static int w; // kích thước trò chơi  N
+	private static int h; // kích thước trò chơi  M
+	private static int d; // tổng số biến dùng để mã hóa cạnh ngang và dọc
+	private static int k; // tổng số biến dùng để mã hóa cạnh ngang
+	private int _bitNumber; // số bit cần để mã hóa mỗi đỉnh
+	private int[][][] v; // mảng 3 chiều chứa mã biến và phần nhớ của mỗi đỉnh
+
 	public SatEncode(int[][] val) {
+		text = new ArrayList<String>();
+		this.val = val;
 		w = MainFrame.WIDTH;
 		h = MainFrame.HEIGHT;
-		this.val = val;
 		d = (w + 1) * h + w * (h + 1);
 		k = w * (h + 1);
-		
-		int bitN = 2 * bitNumber() + 1;
-		v = new int[w+1][h+1][bitN];
-		
-		int value = 2*((w+1)*h + w*(h+1))+1;
-		
-		for (int i = 0; i < w+1; i++) {
-            for (int j = 0; j < h+1; j++) {
-                for (int k = 1; k < bitN; k++) {
-                    v[i][j][k] = value;
-                    
-                    value++;
-                }
-            }
-        
-        }
-		
+		_bitNumber = bitNumber();
+		int _bit = 2 * bitNumber() + 1;
+		v = new int[w + 1][h + 1][_bit];
+		int value = 2 * ((w + 1) * h + w * (h + 1)) + 1;
+		for (int i = 0; i < w + 1; i++) {
+			for (int j = 0; j < h + 1; j++) {
+				for (int k = 1; k < _bit; k++) {
+					v[i][j][k] = value;
+					value++;
+				}
+			}
+		}
 	}
 	
-	
-	private static int bitNumber(){
+	// ---------------------------------------------//
+	// Tính số bit cần để mã hóa mỗi đỉnh dựa trên kích thước của trò chơi//
+	private int bitNumber() {
 		int bit = 5;
-		int mn  = (w+1)*(h+1);
-		while(Math.pow(2,bit)-1 < mn){
+		int mn = (w + 1) * (h + 1);
+		while (Math.pow(2, bit) - 1 < mn) {
 			bit++;
 		}
 		return bit;
 	}
-	
-	// set Array Bit
-	public int[] setArrayBit(int m, int n,int z){
-		int _bitNumber=bitNumber();
+
+	// ---------------------------------------------//
+	// Mảng biến nguyên mã hóa cho giá trị a, b ,c ( a = b+ 1 with c ) dưới dạng
+	// nhị phân//
+	private int[] setArrayBit(int m, int n, int z) {
 		int[] arrBit = new int[_bitNumber];
-        int i = 0;
-        for (int k = z; k < z + _bitNumber; k++) {
-            arrBit[i] = v[m][n][k];
-//            System.out.println("v("+w+","+h+","+k+") "+i+" "+arrBit[i]);
-            i++;
-        }
-        return arrBit;
+		int i = 0;
+		for (int k = z; k < z + _bitNumber; k++) {
+			arrBit[i] = v[m][n][k];
+			i++;
+		}
+		return arrBit;
 	}
 	
-	//---------- a = b+ 1 ( with c ) ----------//
-    public void bitAddition(int z, int[] a, int[] b, int[] c) {
-        int i, j, t;
-        for (i = 0; i < bitNumber(); i++) {
-            if (i == 0) {
-                t = 1;
-            } else {
-                t = -1;
-            }
-            //z là mã biến của cạnh x1, x2, x3, x4.....
-            
-            // a[0] = -b[0] =>  cnf (-a[0] v b[0]) ^ (a[0] v b[0])
-            text.add(t * a[i] + " " + -a[0] + " " + -b[0] + " "+ -z);
-            text.add(t * a[i] + " " + a[0] + " " + b[0] +" "+ -z);
-            
-            //
-            text.add(t * a[i] + " " + b[0] + " " + -c[0] +" "+ -z);
-            text.add(t * a[i] + " " + c[0] + " " + -b[0] +" "+ -z);
+	// ---------------------------------------------//
+	// Thực hiện phép toán công bit: a = b+ 1 ( và bộ nhớ c ) //
+	private void bitAddition(int z, int[] a, int[] b, int[] c) {
+		int i, j, t;
+		for (i = 0; i < _bitNumber; i++) {
+			if (i == 0) {
+				t = 1;
+			} else {
+				t = -1;
+			}
+			// z là mã biến của cạnh như x1, x2, x3, x4
+			
+			
+			// a[0] = -b[0] => cnf: (-a[0] v b[0]) ^ (a[0] v b[0])
+//			if (!(t == 1 && i == 0)) {
+				text.add(t * a[i] + " " + -a[0] + " " + -b[0] + " " + -z);
+//			}
+			
+//			if (!(t == -1 && i == 0)) {
+				text.add(t * a[i] + " " + a[0] + " " + b[0] + " " + -z);
+//			}
+			
+			// c[0 = b[0]] => cnf: (b[0] v -c[0]) ^ (-b[0] v c[0])
+			text.add(t * a[i] + " " + b[0] + " " + -c[0] + " " + -z);
+			text.add(t * a[i] + " " + c[0] + " " + -b[0] + " " + -z);
 
-            //------------------------------// 
-            for (j = 1; j < bitNumber(); j++) {
-            	text.add(t * a[i] + " " + -c[j] + " " + b[j] +" "+ -z);
-            	text.add(t * a[i] + " " + -c[j] + " " + c[j - 1] +" "+ -z);
-            	text.add(t * a[i] + " " + c[j] + " " + -c[j - 1] + " " + -b[j] +" "+ -z);
-            	
-            	text.add(t * a[i] + " " + -a[j] + " " + b[j] + " " + c[j - 1] +" "+ -z);
-            	text.add(t * a[i] + " " + a[j] + " " + -b[j] + " " + c[j - 1] +" "+ -z);
-            	text.add(t * a[i] + " " + a[j] + " " + b[j] + " " + -c[j - 1] +" "+ -z);
-                text.add(t * a[i] + " " + -a[j] + " " + -b[j] + " " + -c[j - 1] +" "+ -z);
-            }
-        }
-    }
-    //------------------------------// 
-	public void encode() {
-		text = new ArrayList<String>();
+			for (j = 1; j < _bitNumber; j++) {
+				// c[i] = b[i] ^ c[i-1] 
+				// => cnf: (-c[i] v b[i]) ^ (-c[i] v c[i-1]) ^
+				// (c[i] v -c[i-1] v -b[i])
+				text.add(t * a[i] + " " + -c[j] + " " + b[j] + " " + -z);
+				text.add(t * a[i] + " " + -c[j] + " " + c[j - 1] + " " + -z);
+				text.add(t * a[i] + " " + c[j] + " " + -c[j - 1] + " " + -b[j]
+						+ " " + -z);
+
+				// a[i] = b[i] + c[i-1]
+				// => cnf: (-a[i] v b[i] v c[i-1]) ^ (a[i] v -b[i] v c[i-1]) ^
+				// (a[i] v b[i] v -c[i-1]) ^ (-a[i] v -b[i] v -c[i-1])
+				
+				text.add(t * a[i] + " " + -a[j] + " " + b[j] + " " + c[j - 1]
+						+ " " + -z);
+				text.add(t * a[i] + " " + a[j] + " " + -b[j] + " " + c[j - 1]
+						+ " " + -z);
+				text.add(t * a[i] + " " + a[j] + " " + b[j] + " " + -c[j - 1]
+						+ " " + -z);
+				text.add(t * a[i] + " " + -a[j] + " " + -b[j] + " " + -c[j - 1]
+						+ " " + -z);
+			}
+		}
+	}
+	
+	// ---------------------------------------------//
+	// Luật thỏa mãn số trong ô //
+	private void ruleNumber() {
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				switch (val[i][j]) {
 				case 0:
-					// System.out.println(ul(i,j)+" "+ur(i,j)+" "+dl(i,j)+" "+dr(i,j)+" "+lu(i,j)+" "+ld(i,j)+" "+ru(i,j)+" "+rd(i,j));
 					text.add("-" + ul(i, j));
 					text.add("-" + ur(i, j));
 					text.add("-" + dl(i, j));
@@ -113,8 +127,8 @@ public class SatEncode {
 					text.add("-" + ru(i, j));
 					text.add("-" + rd(i, j));
 					break;
+					
 				case 1:
-//					text.add("kkkkkkk");
 					text.add(ul(i, j) + " " + ur(i, j) + " " + dl(i, j) + " "
 							+ dr(i, j) + " " + lu(i, j) + " " + ld(i, j) + " "
 							+ ru(i, j) + " " + rd(i, j));
@@ -147,8 +161,8 @@ public class SatEncode {
 					text.add("-" + ld(i, j) + " -" + dl(i, j));
 					text.add("-" + lu(i, j) + " -" + dr(i, j));
 					text.add("-" + lu(i, j) + " -" + dl(i, j));
-
 					break;
+					
 				case 2:
 					text.add(rd(i, j) + " " + ru(i, j) + " " + ur(i, j) + " "
 							+ ul(i, j) + " " + ld(i, j) + " " + lu(i, j));
@@ -194,8 +208,8 @@ public class SatEncode {
 					text.add("-" + ul(i, j) + " -" + lu(i, j) + " -" + dr(i, j));
 					text.add("-" + ur(i, j) + " -" + lu(i, j) + " -" + dl(i, j));
 					text.add("-" + ul(i, j) + " -" + lu(i, j) + " -" + dl(i, j));
-
 					break;
+					
 				case 3:
 					text.add(rd(i, j) + " " + ru(i, j) + " " + ur(i, j) + " "
 							+ ul(i, j));
@@ -245,21 +259,17 @@ public class SatEncode {
 							+ " -" + dr(i, j));
 					text.add("-" + ru(i, j) + " -" + ul(i, j) + " -" + lu(i, j)
 							+ " -" + dl(i, j));
-					
-					
-					if(i==0 && j==0){
-						text.add(lu(i,j)+" ");
-						text.add(ur(i,j)+" ");
-						if(val[i+1][j+1]== 3){
-							text.add(dr(i+1,j+1)+" ");
-							text.add(ru(i+1,j+1)+" ");
+
+					if (i == 0 && j == 0) {
+						text.add(lu(i, j) + " ");
+						text.add(ur(i, j) + " ");
+						if (val[i + 1][j + 1] == 3) {
+							text.add(dr(i + 1, j + 1) + " ");
+							text.add(ru(i + 1, j + 1) + " ");
 						}
 					}
-					
-
-					
-					
 					break;
+					
 				case 4:
 					text.add(String.valueOf(rd(i, j)));
 					text.add(String.valueOf(ru(i, j)));
@@ -273,273 +283,443 @@ public class SatEncode {
 				}
 			}
 		}
-		
-		//encode cÅ©
-//		for(int i=0;i<w+1;i++){
-//			for(int j=0;j<h+1;j++){
-////				if(i==5 && j==5){
-////				text.add("-----------------------------");
-////				System.out.println(e1(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e4(i,j)+ " "+e5(i,j)+" "+e6(i,j)+" "+e7(i,j)+" "+e8(i,j));
-//				//moi dinh co nhieu nhat 1 duong di vao
-//				if(e1(i,j) != -1 && e4(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e4(i,j));
-//				if(e1(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e6(i,j));
-//				if(e1(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e7(i,j));
-//				if(e4(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e4(i,j)+" -"+e6(i,j));
-//				if(e4(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e4(i,j)+" -"+e7(i,j));
-//				if(e6(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e6(i,j)+" -"+e7(i,j));
-//				
-//				//moi dinh co nhieu nhat 1 duong di ra
-//				if(e2(i,j) != -1 && e3(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e3(i,j));
-//				if(e2(i,j) != -1 && e5(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e5(i,j));
-//				if(e2(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e8(i,j));
-//				if(e3(i,j) != -1 && e5(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e5(i,j));
-//				if(e3(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e8(i,j));
-//				if(e5(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e5(i,j)+" -"+e8(i,j));
-//				
-//				//duong vao cua 1 dinh ko la duong ra cua chinh no
-//				if(e1(i,j) != -1 && e5(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e5(i,j));
-//				if(e2(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e6(i,j));
-//				if(e3(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e7(i,j));
-//				if(e4(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e4(i,j)+" -"+e8(i,j));
-//				
-//				//duong vao la 1 canh va duong ra o 3 canh kia
-//				if(e1(i,j) != -1 && e2(i,j)!=-1 && e3(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e1(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e8(i,j));
-//				if(e6(i,j) != -1 && e3(i,j)!=-1 && e5(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e6(i,j)+" "+e3(i,j)+" "+e5(i,j)+" "+e8(i,j));
-//				if(e7(i,j) != -1 && e2(i,j)!=-1 && e5(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e7(i,j)+" "+e2(i,j)+" "+e5(i,j)+" "+e8(i,j));
-//				if(e4(i,j) != -1 && e2(i,j)!=-1 && e3(i,j)!=-1 && e5(i,j)!=-1)	text.add("-"+e4(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e5(i,j));
-//				
-////				}
-//			}
-//		}
-
-		for(int i=0;i<w+1;i++){
-			for(int j=0;j<h+1;j++){
-//				if(i==5 && j==5){
-//				text.add("-----------------------------");
-//				System.out.println(i+ " " +j + " " +e1(i,j)+" "+e2(i,j)+" "+e3(i,j)+" "+e4(i,j)+ " "+e5(i,j)+" "+e6(i,j)+" "+e7(i,j)+" "+e8(i,j));
-				//moi dinh co nhieu nhat 1 duong di vao
-				if(e1(i,j) != -1 && e2(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e2(i,j));
-				if(e1(i,j) != -1 && e3(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e3(i,j));
-				if(e1(i,j) != -1 && e4(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e4(i,j));
-				if(e2(i,j) != -1 && e3(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e3(i,j));
-				if(e2(i,j) != -1 && e4(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e4(i,j));
-				if(e3(i,j) != -1 && e4(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e4(i,j));
+	}
+	//-------------- Luat bo sung cac so 3 cheo nhau ----------//
+	private void extra(){
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				//hai so 3 cheo nhau
 			
-				//moi dinh co nhieu nhat 1 duong di ra
-				if(e5(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e5(i,j)+" -"+e6(i,j));
-				if(e5(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e5(i,j)+" -"+e7(i,j));
-				if(e5(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e5(i,j)+" -"+e8(i,j));
-				if(e6(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e6(i,j)+" -"+e7(i,j));
-				if(e6(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e6(i,j)+" -"+e8(i,j));
-				if(e7(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e7(i,j)+" -"+e8(i,j));
-				
-				//duong vao cua 1 dinh ko la duong ra cua chinh no
-				if(e1(i,j) != -1 && e5(i,j)!=-1)	text.add("-"+e1(i,j)+" -"+e5(i,j));
-				if(e2(i,j) != -1 && e6(i,j)!=-1)	text.add("-"+e2(i,j)+" -"+e6(i,j));
-				if(e3(i,j) != -1 && e7(i,j)!=-1)	text.add("-"+e3(i,j)+" -"+e7(i,j));
-				if(e4(i,j) != -1 && e8(i,j)!=-1)	text.add("-"+e4(i,j)+" -"+e8(i,j));
-				
-//				duong vao la 1 canh va duong ra o 3 canh kia
-//				text.add("-----------------------3 main, dinh:" + i + " "+ j);
-				
-				// tong quat voi dinh co ca 4 canh xung quanh
-				if(e1(i,j) != -1 && e6(i,j)!=-1 && e7(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e1(i,j)+" "+e6(i,j)+" "+e7(i,j)+" "+e8(i,j));
-				if(e2(i,j) != -1 && e5(i,j)!=-1 && e7(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e2(i,j)+" "+e5(i,j)+" "+e7(i,j)+" "+e8(i,j));
-				if(e3(i,j) != -1 && e5(i,j)!=-1 && e6(i,j)!=-1 && e8(i,j)!=-1)	text.add("-"+e3(i,j)+" "+e5(i,j)+" "+e6(i,j)+" "+e8(i,j));
-				if(e4(i,j) != -1 && e5(i,j)!=-1 && e6(i,j)!=-1 && e7(i,j)!=-1)	text.add("-"+e4(i,j)+" "+e5(i,j)+" "+e6(i,j)+" "+e7(i,j));
-//				text.add("----------------------- dk bon dinh");
-				//dinh goc trai tren cung
-				if(e2(i,j) != -1 && e3(i,j) != -1 && e4(i,j) == -1 && e1(i,j) == -1){
-//					text.add("dinh goc trai tren cung");
-					text.add("-"+e3(i,j)+" "+e6(i,j));
-					text.add("-"+e2(i,j)+" "+e7(i,j));
+				if(i < w-1 && j < h-1){
+					if(val[i][j] == 3 && val[i+1][j+1] == 3){
+						text.add(lu(i,j)+ " "+ ld(i,j));
+						text.add(ul(i,j)+ " "+ ur(i,j));
+						text.add(dl(i+1,j+1)+ " "+ dr(i+1,j+1));
+						text.add(ru(i+1,j+1)+ " "+ rd(i+1,j+1));
+					}
 				}
-				//dinh goc trai duoi cung
-				if(e2(i,j) != -1 && e1(i,j) != -1 && e3(i,j)==-1 && e4(i,j) == -1){
-					text.add("-"+e2(i,j)+" "+e5(i,j));
-					text.add("-"+e1(i,j)+" "+e6(i,j));
+				if(i<w-1 && j>0){
+					if(val[i][j] == 3 && val[i+1][j-1] == 3){
+						text.add(ul(i,j)+ " "+ ur(i,j));
+						text.add(ru(i,j)+ " "+ rd(i,j));
+						text.add(lu(i+1,j-1)+ " "+ ld(i+1,j-1));
+						text.add(dl(i+1,j-1)+ " "+ dr(i+1,j-1));
+					}
 				}
-				//phai tren cung
-				if(e4(i,j) != -1 && e3(i,j) != -1 && e2(i,j) == -1 && e1(i,j) == -1){
-//					text.add("dinh goc phai tren cung");
-					text.add("-"+e4(i,j)+" "+e7(i,j));
-					text.add("-"+e3(i,j)+" "+e8(i,j));
-				}
-				//phai duoi cung
-				if(e4(i,j) != -1 && e1(i,j) != -1 && e2(i,j) == -1 && e3(i,j) == -1){
-					text.add("-"+e4(i,j)+" "+e5(i,j));
-					text.add("-"+e1(i,j)+" "+e8(i,j));
-				}
-//				text.add("----------------------- dk bien");
-				// bien tren
-				if(e4(i,j) != -1 && e2(i,j) != -1 && e3(i,j) != -1 && e1(i,j) == -1){
-					text.add("-"+e4(i,j)+" "+e6(i,j)+" "+e7(i,j));
-					text.add("-"+e3(i,j)+" "+e6(i,j)+" "+e8(i,j));
-					text.add("-"+e2(i,j)+" "+e8(i,j)+" "+e7(i,j));
-				}
-				//bien trai
-				if(e1(i,j) != -1 && e2(i,j) != -1 && e3(i,j) != -1 && e4(i,j) == -1){
-					text.add("-"+e2(i,j)+" "+e5(i,j)+" "+e7(i,j));
-					text.add("-"+e3(i,j)+" "+e5(i,j)+" "+e6(i,j));
-					text.add("-"+e1(i,j)+" "+e6(i,j)+" "+e7(i,j));
-				}
-				//bien duoi
-				if(e4(i,j) != -1 && e2(i,j) != -1 && e1(i,j) != -1 && e3(i,j) == -1){
-					text.add("-"+e2(i,j)+" "+e5(i,j)+" "+e8(i,j));
-					text.add("-"+e1(i,j)+" "+e6(i,j)+" "+e8(i,j));
-					text.add("-"+e4(i,j)+" "+e6(i,j)+" "+e5(i,j));
-				}
-
-				//bien phai
-				if(e4(i,j) != -1 && e1(i,j) != -1 && e3(i,j) != -1 && e2(i,j) == -1){
-					text.add("-"+e4(i,j)+" "+e5(i,j)+" "+e7(i,j));
-					text.add("-"+e1(i,j)+" "+e8(i,j)+" "+e7(i,j));
-					text.add("-"+e3(i,j)+" "+e5(i,j)+" "+e8(i,j));
-				}
-				
-//				text.add("ket thuc dieu kien main");
-				// duong di vao cua dinh nay la duong ra cua dinh truoc do
-
 				
 			}
 		}
-	SingleLoop();
 	}
-    //------------------------------// 
-    //Một vòng duy nhất//
-    public void SingleLoop() {
-        int i, j, k, t, u;
-        for (i = 0; i < w+1; i++) {
-            for (j = 0; j < h+1; j++) {
-//            	System.out.println(i+ " " + j + " " +e1(i,j));
-                if (e1(i,j) != -1) {
-                    bitAddition(e1(i,j), setArrayBit(i, j, 1), setArrayBit(i - 1, j, 1), setArrayBit(i, j, 1 + bitNumber()));
-                }
-                if (e2(i,j) != -1) {
-                    bitAddition(e2(i,j), setArrayBit(i, j, 1), setArrayBit(i, j + 1, 1), setArrayBit(i, j, 1 + bitNumber()));
-                }
-                if (e3(i,j) != -1) {
-                    bitAddition(e3(i,j), setArrayBit(i, j, 1), setArrayBit(i + 1, j, 1), setArrayBit(i, j, 1 + bitNumber()));
-                }
-                if (e4(i,j) != -1) {
-                    bitAddition(e4(i,j), setArrayBit(i, j, 1), setArrayBit(i, j - 1, 1), setArrayBit(i, j, 1 + bitNumber()));
-                }
-            }
-        }
+	//----------------Luat bo sung so 0 va 3 canh nhau--------//
+	private void extra2(){
+		for (int i = 1; i < w-1; i++) {
+			for (int j = 1; j < h-1; j++) {
+				if(val[i][j] == 3){
+					if(val[i][j-1] == 0){
+						text.add(lu(i-1,j)+ " "+ ld(i-1,j));
+						text.add(ul(i,j)+ " "+ ur(i,j));
+						text.add(ru(i,j)+ " "+ rd(i,j));
+						text.add(dl(i,j)+ " "+ dr(i,j));
+						text.add(lu(i+1,j)+ " "+ ld(i+1,j));
+					}
+					if(val[i][j+1] == 0){
+						text.add(ru(i-1,j)+ " "+ rd(i-1,j));
+						text.add(ul(i,j)+ " "+ ur(i,j));
+						text.add(lu(i,j)+ " "+ ld(i,j));
+						text.add(dl(i,j)+ " "+ dr(i,j));
+						text.add(ru(i+1,j)+ " "+ rd(i+1,j));
+					}
+					if(val[i-1][j] == 0){
+						text.add(ul(i,j-1)+ " "+ ur(i,j-1));
+						text.add(lu(i,j)+ " "+ ld(i,j));
+						text.add(dl(i,j)+ " "+ dr(i,j));
+						text.add(ru(i,j)+ " "+ rd(i,j));
+						text.add(ul(i,j+1)+ " "+ ur(i,j+1));
+					}
+					if(val[i+1][j] == 0){
+						text.add(dl(i,j-1)+ " "+ dr(i,j-1));
+						text.add(lu(i,j)+ " "+ ld(i,j));
+						text.add(ul(i,j)+ " "+ ur(i,j));
+						text.add(ru(i,j)+ " "+ rd(i,j));
+						text.add(dl(i,j+1)+ " "+ dr(i,j+1));
+					}
+				}
+			}
+		}
+	}
+	//-----so 3 o goc ---//
+	private void extra3(){
+		if(val[0][0] == 3){
+			text.add(lu(0,0) + " " + ld(0,0));
+			text.add(ul(0,0) + " " + ur(0,0));
+			text.add("- " + lu(0,0)+ " " + ur(0,0));
+			text.add("- " + ul(0,0)+ " " + ld(0,0));
+		}
+		if(val[0][h-1] == 3){
+			text.add(ul(0,h-1) + " " + ur(0,h-1));
+			text.add(ru(0,h-1) + " " + rd(0,h-1));
+			text.add("- " + ur(0,h-1)+ " " + rd(0,h-1));
+			text.add("- " + ru(0,h-1)+ " " + ul(0,h-1));
+		}
+		if(val[w-1][0] == 3){
+			text.add(lu(w-1,0) + " " + ld(w-1,0));
+			text.add(dl(w-1,0) + " " + dr(w-1,0));
+			text.add("- " + ld(w-1,0)+ " " + dr(w-1,0));
+			text.add("- " + dl(w-1,0)+ " " + lu(w-1,0));
+		}
+		if(val[w-1][h-1] == 3){
+			text.add(dr(w-1,h-1) + " " + dr(w-1,h-1));
+			text.add(ru(w-1,h-1) + " " + rd(w-1,h-1));
+			text.add("- " + dr(w-1,h-1)+ " " + ru(w-1,h-1));
+			text.add("- " + rd(w-1,h-1)+ " " + dl(w-1,h-1));
+		}
+		
+	}
+	//----- hai so 3 canh sat nhau ---//
+	private void extra4(){
+		for (int i = 0; i <h-1; i++) {
+			for (int j = 0; j <w; j++) {	
+				if(val[i][j] == 3 && val[i][j+1] == 3){
+					text.add(lu(i,j) + " " + ld(i,j));
+					text.add(ru(i,j) + " " + rd(i,j));
+					text.add(ru(i,j+1) + " " + rd(i,j+1));
+				}
+				
+				
+			}
+		}
+		
+		for (int i = 0; i <h; i++) {
+			for (int j = 0; j <w-1; j++) {	
+				if(val[i][j] == 3 && val[i+1][j] == 3){
+					text.add(ul(i,j) + " " + ur(i,j));
+					text.add(dl(i,j) + " " + dr(i,j));
+					text.add(dl(i+1,j) + " " + dr(i+1,j));
+				}
+				
+				
+			}
+		}
+	}
+	// ---------------------------------------------//
+	// Luật thỏa mãn cạnh //
+	private void ruleEdge() {
+		for (int i = 0; i < w + 1; i++) {
+			for (int j = 0; j < h + 1; j++) {
 
-//        //------------------------------// 
-//        //chỉ có duy nhất một đỉnh được đánh số 1//
-        for (i = 0; i < w+1; i++) {
-            for (j = 0; j < h+1; j++) {
-                for (k = 0; k < w+1; k++) {
-                    for (t = 0; t < h+1; t++) {
-                        if (i != k || j != t) {
-                            String valueOne = "";
-                            valueOne += Integer.toString(-v[i][j][1]) + " " + Integer.toString(-v[k][t][1]);
-                            for (u = 2; u < 1 + bitNumber(); u++) {
-                                valueOne += " " + v[i][j][u] + " " + v[k][t][u];
-                            }
-                            text.add(valueOne);
-                        }
-                    }
-                }
-            }
-        }
-    }
+				// Mỗi đỉnh có nhiều nhất một đường đi vào
+				if (e1(i, j) != -1 && e2(i, j) != -1)
+					text.add("-" + e1(i, j) + " -" + e2(i, j));
+				if (e1(i, j) != -1 && e3(i, j) != -1)
+					text.add("-" + e1(i, j) + " -" + e3(i, j));
+				if (e1(i, j) != -1 && e4(i, j) != -1)
+					text.add("-" + e1(i, j) + " -" + e4(i, j));
+				if (e2(i, j) != -1 && e3(i, j) != -1)
+					text.add("-" + e2(i, j) + " -" + e3(i, j));
+				if (e2(i, j) != -1 && e4(i, j) != -1)
+					text.add("-" + e2(i, j) + " -" + e4(i, j));
+				if (e3(i, j) != -1 && e4(i, j) != -1)
+					text.add("-" + e3(i, j) + " -" + e4(i, j));
 
-   
+				// Mỗi đỉnh có nhiều nhất một đường đi ra
+				if (e5(i, j) != -1 && e6(i, j) != -1)
+					text.add("-" + e5(i, j) + " -" + e6(i, j));
+				if (e5(i, j) != -1 && e7(i, j) != -1)
+					text.add("-" + e5(i, j) + " -" + e7(i, j));
+				if (e5(i, j) != -1 && e8(i, j) != -1)
+					text.add("-" + e5(i, j) + " -" + e8(i, j));
+				if (e6(i, j) != -1 && e7(i, j) != -1)
+					text.add("-" + e6(i, j) + " -" + e7(i, j));
+				if (e6(i, j) != -1 && e8(i, j) != -1)
+					text.add("-" + e6(i, j) + " -" + e8(i, j));
+				if (e7(i, j) != -1 && e8(i, j) != -1)
+					text.add("-" + e7(i, j) + " -" + e8(i, j));
 
-	//------------------------------//  
+				// Đường vào một đỉnh không là đường ra của chính nó
+				if (e1(i, j) != -1 && e5(i, j) != -1)
+					text.add("-" + e1(i, j) + " -" + e5(i, j));
+				if (e2(i, j) != -1 && e6(i, j) != -1)
+					text.add("-" + e2(i, j) + " -" + e6(i, j));
+				if (e3(i, j) != -1 && e7(i, j) != -1)
+					text.add("-" + e3(i, j) + " -" + e7(i, j));
+				if (e4(i, j) != -1 && e8(i, j) != -1)
+					text.add("-" + e4(i, j) + " -" + e8(i, j));
+
+				// Đường vào là 1 cạnh và phải ra ở 3 cạnh kia
+
+				// Tổng quát với đỉnh có cả 4 cạnh xung quanh
+				if (e1(i, j) != -1 && e6(i, j) != -1 && e7(i, j) != -1
+						&& e8(i, j) != -1)
+					text.add("-" + e1(i, j) + " " + e6(i, j) + " " + e7(i, j)
+							+ " " + e8(i, j));
+				if (e2(i, j) != -1 && e5(i, j) != -1 && e7(i, j) != -1
+						&& e8(i, j) != -1)
+					text.add("-" + e2(i, j) + " " + e5(i, j) + " " + e7(i, j)
+							+ " " + e8(i, j));
+				if (e3(i, j) != -1 && e5(i, j) != -1 && e6(i, j) != -1
+						&& e8(i, j) != -1)
+					text.add("-" + e3(i, j) + " " + e5(i, j) + " " + e6(i, j)
+							+ " " + e8(i, j));
+				if (e4(i, j) != -1 && e5(i, j) != -1 && e6(i, j) != -1
+						&& e7(i, j) != -1)
+					text.add("-" + e4(i, j) + " " + e5(i, j) + " " + e6(i, j)
+							+ " " + e7(i, j));
+
+				// Đỉnh ở góc chỉ có 2 cạnh
+
+				// Đỉnh góc trái trên
+				if (e2(i, j) != -1 && e3(i, j) != -1 && e4(i, j) == -1
+						&& e1(i, j) == -1) {
+					// text.add("dinh goc trai tren cung");
+					text.add("-" + e3(i, j) + " " + e6(i, j));
+					text.add("-" + e2(i, j) + " " + e7(i, j));
+				}
+
+				// Đỉnh góc phải dưới
+				if (e2(i, j) != -1 && e1(i, j) != -1 && e3(i, j) == -1
+						&& e4(i, j) == -1) {
+					text.add("-" + e2(i, j) + " " + e5(i, j));
+					text.add("-" + e1(i, j) + " " + e6(i, j));
+				}
+
+				// Đỉnh góc phải trên
+				if (e4(i, j) != -1 && e3(i, j) != -1 && e2(i, j) == -1
+						&& e1(i, j) == -1) {
+					// text.add("dinh goc phai tren cung");
+					text.add("-" + e4(i, j) + " " + e7(i, j));
+					text.add("-" + e3(i, j) + " " + e8(i, j));
+				}
+
+				// Đỉnh góc phải dưới
+				if (e4(i, j) != -1 && e1(i, j) != -1 && e2(i, j) == -1
+						&& e3(i, j) == -1) {
+					text.add("-" + e4(i, j) + " " + e5(i, j));
+					text.add("-" + e1(i, j) + " " + e8(i, j));
+				}
+
+				// Đỉnh ở biên (ngoại trừ các đỉnh góc) thì có 3 cạnh
+
+				// Biên trên
+				if (e4(i, j) != -1 && e2(i, j) != -1 && e3(i, j) != -1
+						&& e1(i, j) == -1) {
+					text.add("-" + e4(i, j) + " " + e6(i, j) + " " + e7(i, j));
+					text.add("-" + e3(i, j) + " " + e6(i, j) + " " + e8(i, j));
+					text.add("-" + e2(i, j) + " " + e8(i, j) + " " + e7(i, j));
+				}
+
+				// Biên trái
+				if (e1(i, j) != -1 && e2(i, j) != -1 && e3(i, j) != -1
+						&& e4(i, j) == -1) {
+					text.add("-" + e2(i, j) + " " + e5(i, j) + " " + e7(i, j));
+					text.add("-" + e3(i, j) + " " + e5(i, j) + " " + e6(i, j));
+					text.add("-" + e1(i, j) + " " + e6(i, j) + " " + e7(i, j));
+				}
+
+				// Biên dưới
+				if (e4(i, j) != -1 && e2(i, j) != -1 && e1(i, j) != -1
+						&& e3(i, j) == -1) {
+					text.add("-" + e2(i, j) + " " + e5(i, j) + " " + e8(i, j));
+					text.add("-" + e1(i, j) + " " + e6(i, j) + " " + e8(i, j));
+					text.add("-" + e4(i, j) + " " + e6(i, j) + " " + e5(i, j));
+				}
+
+				// Biên phải
+				if (e4(i, j) != -1 && e1(i, j) != -1 && e3(i, j) != -1
+						&& e2(i, j) == -1) {
+					text.add("-" + e4(i, j) + " " + e5(i, j) + " " + e7(i, j));
+					text.add("-" + e1(i, j) + " " + e8(i, j) + " " + e7(i, j));
+					text.add("-" + e3(i, j) + " " + e5(i, j) + " " + e8(i, j));
+				}
+			}
+		}
+	}
+	
+	// ---------------------------------------------//
+	// Luật một vòng duy nhất //
+	private void ruleSingleLoop() {
+		int i, j, k, t, u;
+		// Mỗi đỉnh sẽ được đánh số 1 hoặc bằng số của đỉnh có cạnh đi vào nó
+		// cộng 1.
+		for (i = 0; i < w + 1; i++) {
+			for (j = 0; j < h + 1; j++) {
+				if (e1(i, j) != -1) {
+					bitAddition(e1(i, j), setArrayBit(i, j, 1),
+							setArrayBit(i - 1, j, 1),
+							setArrayBit(i, j, 1 + bitNumber()));
+				}
+				if (e2(i, j) != -1) {
+					bitAddition(e2(i, j), setArrayBit(i, j, 1),
+							setArrayBit(i, j + 1, 1),
+							setArrayBit(i, j, 1 + bitNumber()));
+				}
+				if (e3(i, j) != -1) {
+					bitAddition(e3(i, j), setArrayBit(i, j, 1),
+							setArrayBit(i + 1, j, 1),
+							setArrayBit(i, j, 1 + bitNumber()));
+				}
+				if (e4(i, j) != -1) {
+					bitAddition(e4(i, j), setArrayBit(i, j, 1),
+							setArrayBit(i, j - 1, 1),
+							setArrayBit(i, j, 1 + bitNumber()));
+				}
+			}
+		}
+
+		// Chỉ có duy nhất một đỉnh được đánh số 1 //
+		for (i = 0; i < w + 1; i++) {
+			for (j = 0; j < h + 1; j++) {
+				for (k = 0; k < w + 1; k++) {
+					for (t = 0; t < h + 1; t++) {
+						if (i != k || j != t) {
+							String valueOne = "";
+							valueOne += Integer.toString(-v[i][j][1]) + " "
+									+ Integer.toString(-v[k][t][1]);
+							for (u = 2; u < 1 + bitNumber(); u++) {
+								valueOne += " " + v[i][j][u] + " " + v[k][t][u];
+							}
+							text.add(valueOne);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// ---------------------------------------------//
+	// Encode Solve 1 gọi Sat nhiều lần, kiểm tra điều kiện //
+	public void encode1(){
+		ruleNumber();
+//		extra();
+//		extra2();
+//		extra3();
+		ruleEdge();
+//		ruleSingleLoop();
+	}
+	
+	// ---------------------------------------------//
+	// Encode Solve 2 đánh số đỉnh //
+	public void encode2() {
+		ruleNumber();
+		extra();
+		ruleEdge();
+		ruleSingleLoop();
+	}
+	
+	
 	public ArrayList<String> getTextEncoded() {
 		return text;
 	}
 
+	// Cạnh trên hướng phải của ô [r][c]
 	static int ur(int r, int c) {
 		return w * r + c + 1;
 	}
 
-	int ul(int r, int c) {
+	// Cạnh trên hướng trái của ô [r][c]
+	static int ul(int r, int c) {
 		return w * r + c + 1 + d;
 	}
 
+	// Cạnh dưới hướng phải của ô [r][c]
 	static int dr(int r, int c) {
 		return w * (r + 1) + c + 1;
 	}
-
-	int dl(int r, int c) {
+	
+	// Cạnh dưới hướng trái của ô [r][c]
+	static int dl(int r, int c) {
 		return w * (r + 1) + c + 1 + d;
 	}
-
+	
+	// Cạnh phải hướng xuống của ô [r][c]
 	static int rd(int r, int c) {
 		return k + (w + 1) * r + c + 2;
 	}
-
-	int ru(int r, int c) {
+	
+	// Cạnh phải hướng lên của ô [r][c]
+	static int ru(int r, int c) {
 		return k + (w + 1) * r + c + 2 + d;
 	}
-
+	
+	// Cạnh trái hướng xuống của ô [r][c]
 	static int ld(int r, int c) {
 		return k + (w + 1) * r + c + 1;
 	}
-
-	int lu(int r, int c) {
+	
+	// Cạnh trái hướng lên của ô [r][c]
+	static int lu(int r, int c) {
 		return k + (w + 1) * r + c + 1 + d;
 	}
-	//Tren xuong
-	public static int e1(int r,int c){
-		if(r==0) return -1;
-		if(c!=h){
-			return ld(r-1,c);
-		}else{
-			return rd(r-1,c-1); 
+
+	// Cạnh có chiều trên xuống của đỉnh [r][c]
+	static int e1(int r, int c) {
+		if (r == 0)
+			return -1;
+		if (c != h) {
+			return ld(r - 1, c);
+		} else {
+			return rd(r - 1, c - 1);
 		}
 	}
-	//Phai vao
-	public static int e2(int r,int c){
-		if(c==h) return -1;
-		return e6(r,c) + d;
+
+	// Cạnh có chiều phải vào của đỉnh [r][c]
+	static int e2(int r, int c) {
+		if (c == h)
+			return -1;
+		return e6(r, c) + d;
 	}
-	//Duoi len
-	public static int e3(int r,int c){
-		if(r==h) return -1;
-		return e7(r,c)+d;
+
+	// Cạnh có chiều dưới lên của đỉnh [r][c]
+	static int e3(int r, int c) {
+		if (r == h)
+			return -1;
+		return e7(r, c) + d;
 	}
-	//Trai vao
-	public static int e4(int r,int c){
-		if(c==0) return -1;
-		if(r!=0){
-			return ur(r,c-1);
-		}else{
-			return dr(r-1,c-1);
+
+	// Cạnh có chiều trái vào của đỉnh [r][c]
+	static int e4(int r, int c) {
+		if (c == 0)
+			return -1;
+		if (r != 0) {
+			return ur(r, c - 1);
+		} else {
+			return dr(r - 1, c - 1);
 		}
 	}
-	//Tren len
-	public static int e5(int r,int c){
-		if(r==0) return -1;
-		return e1(r,c)+d;
+
+	// Cạnh có chiều từ trên lên của đỉnh [r][c]
+	static int e5(int r, int c) {
+		if (r == 0)
+			return -1;
+		return e1(r, c) + d;
 	}
-	//Phai ra
-	public static int e6(int r,int c){
-		if(c==h) return -1;
-		if(r!=w){
-			return ur(r,c);
-		}else{
-			return dr(r-1,c);
+
+	// Cạnh có chiều từ phải ra của đỉnh [r][c]
+	static int e6(int r, int c) {
+		if (c == h)
+			return -1;
+		if (r != w) {
+			return ur(r, c);
+		} else {
+			return dr(r - 1, c);
 		}
-		
+
 	}
-	//Duoi xuong
-	public static int e7(int r,int c){
-		if(r==w) return -1;
-		if(c!=h){
-			return ld(r,c);
-		}else{
-			return rd(r,c-1);
+
+	// Cạnh có chiều từ dưới xuống của đỉnh [r][c]
+	static int e7(int r, int c) {
+		if (r == w)
+			return -1;
+		if (c != h) {
+			return ld(r, c);
+		} else {
+			return rd(r, c - 1);
 		}
 	}
-	//Trai ra
-	public static int e8(int r,int c){
-		if(c==0) return -1;
-		return e4(r,c)+d;
+
+	// Cạnh có chiều từ trái ra của đỉnh [r][c]
+	static int e8(int r, int c) {
+		if (c == 0)
+			return -1;
+		return e4(r, c) + d;
 	}
 }
