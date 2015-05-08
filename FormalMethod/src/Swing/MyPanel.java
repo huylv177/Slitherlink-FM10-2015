@@ -45,8 +45,8 @@ public class MyPanel extends JPanel implements MouseListener {
 
 		SIZE_BOX = MainFrame.SIZE_BOX;
 
-		setPreferredSize(null);
-		setBackground(Color.cyan);
+//		setPreferredSize(new Dimension((w+2)*SIZE_BOX,(h+2)*SIZE_BOX));
+//		setBackground(Color.cyan);
 	}
 
 	boolean[][] getRowLeftArr() {
@@ -231,7 +231,7 @@ public class MyPanel extends JPanel implements MouseListener {
 				}
 			}
 		}
-		setPreferredSize(new Dimension((w+2)*SIZE_BOX,(h+2)*SIZE_BOX));
+//		setPreferredSize(new Dimension((w+2)*SIZE_BOX,(h+2)*SIZE_BOX));
 		repaint();
 	}
 	

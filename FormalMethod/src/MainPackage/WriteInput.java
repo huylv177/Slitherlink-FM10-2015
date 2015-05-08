@@ -13,11 +13,16 @@ public class WriteInput {
 	private SatEncode satEncode;
 	private int w;
 	private int h;
-	public WriteInput(int[][] val){
+	public WriteInput(int[][] val,int encodeMethod){
 		w= MainFrame.WIDTH;
 		h= MainFrame.HEIGHT;
 		satEncode = new SatEncode(val);
-		satEncode.encode();
+		if(encodeMethod==1){
+			satEncode.encode1();
+		}else if(encodeMethod==2){
+			satEncode.encode2();
+		}
+		
 		stringEncoded = satEncode.getTextEncoded();
 	}
 	public void writeToFile(String fPath){
@@ -33,7 +38,8 @@ public class WriteInput {
 			bw.write("p cnf "+(4*w*h+2*w+2*h)+" "+stringEncoded.size());
 			MainFrame.lblNumOfVariable.setText((4*w*h+2*w+2*h)+"");
 			MainFrame.lblNumOfClause.setText(stringEncoded.size()+"");
-			MainFrame.textPaneInput.setText("p cnf "+(4*w*h+2*w+2*h)+" "+stringEncoded.size());
+			MainFrame.textPaneInput.setText("p cnf "+(4*w*h+2*w+2*h)+" "+stringEncoded.size()+"\n");
+			
 			bw.newLine();
 			
 			for(int i=0;i<stringEncoded.size();i++){

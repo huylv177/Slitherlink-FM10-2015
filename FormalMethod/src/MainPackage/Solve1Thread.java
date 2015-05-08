@@ -13,7 +13,7 @@ import javax.swing.SwingWorker;
 import Swing.MainFrame;
 import Swing.MyPanel;
 
-public class SolveThread extends SwingWorker<String[], Void>{
+public class Solve1Thread extends SwingWorker<String[], Void>{
 	String cnfInput = MainFrame.cnfInput;
 	int[][] val;
 	private WriteInput writeInput;
@@ -27,19 +27,27 @@ public class SolveThread extends SwingWorker<String[], Void>{
 	float elapsedTime;
 	JLabel status ;
 	JLabel lblTotalTime;
+	long encodeMoment;
+	float encodeTime;
+	long solveMoment;
+	float solveTime;
+	JLabel lblEncodeTime;
+	JLabel lblSolveTime;
 	
-	public SolveThread(JDialog loadingDialog, int[][] val, MyPanel myCanvas,long start,JLabel lblTotalTime,JLabel status) {
+	public Solve1Thread(JDialog loadingDialog, int[][] val, MyPanel myCanvas,long start,JLabel lblEncodeTime,JLabel lblSolveTime,JLabel lblTotalTime,JLabel status) {
 		this.loadingDialog = loadingDialog;
 		this.val = val;
 		this.myCanvas = myCanvas;
 		this.start=start;
 		this.status = status;
 		this.lblTotalTime=lblTotalTime;
+		this.lblEncodeTime=lblEncodeTime;
+		this.lblSolveTime=lblSolveTime;
 	}
 
 	@Override
 	protected String[] doInBackground() throws Exception {
-		writeInput = new WriteInput(val);
+		writeInput = new WriteInput(val,1);
 		writeInput.writeToFile(cnfInput);
 		satSolver = new SatSolver();
 
@@ -78,6 +86,8 @@ public class SolveThread extends SwingWorker<String[], Void>{
 		super.done();
 		stop = System.currentTimeMillis();
 		elapsedTime = (float)(stop-start)/1000;
+		lblEncodeTime.setText("--:--");
+		lblSolveTime.setText("--:--");
 		lblTotalTime.setText((int)(elapsedTime/60)+":"+elapsedTime%60);
 		Toolkit.getDefaultToolkit().beep();
 		

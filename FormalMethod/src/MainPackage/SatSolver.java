@@ -3,6 +3,7 @@ package MainPackage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.reader.DimacsReader;
@@ -29,7 +30,7 @@ public class SatSolver {
 
 	public SatSolver() {
 		ISolver solver = SolverFactory.newDefault();
-        solver.setTimeout(60); // 1 hour timeout
+        solver.setTimeout(5*60); // 1 hour timeout
         Reader reader = new DimacsReader(solver);
         // CNF filename is given on the command line 
         try {
@@ -39,7 +40,10 @@ public class SatSolver {
             	RESULT_CODE=1;
                 System.out.println("Satisfiable !");
                 stringDecoded=reader.decode(problem.model());
-                MainFrame.textPaneOutput.setText(stringDecoded);
+                String[] temp = stringDecoded.split(" ");
+                for(int i=0;i<temp.length;i++){
+                	MainFrame.textPaneOutput.append(temp[i]+"\n");
+                }
                 PrintWriter pw = new PrintWriter("cnf/output.cnf");
                 reader.decode(problem.model(), pw);
                 pw.close();

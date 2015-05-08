@@ -35,8 +35,17 @@ import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import MainPackage.SatSolver;
-import MainPackage.SolveThread;
+import MainPackage.Solve1Thread;
+import MainPackage.Solve2Thread;
 import MainPackage.WriteInput;
+
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+
+import java.awt.SystemColor;
+
+import javax.swing.UIManager;
 
 public class MainFrame implements ActionListener {
 
@@ -48,15 +57,16 @@ public class MainFrame implements ActionListener {
 	public static JTextArea textPaneOutput;
 	public JDialog loadingDialog;
 	JLabel lblStatus;
-	SolveThread solveThread;
+	Solve1Thread solve1Thread;
+	Solve2Thread solve2Thread;
 	NewGameFrame newGameFrame;
 	JButton btnCheck;
 	JButton btCancel;
 	JMenuItem mntmNewGame;
 	JMenuItem mntmOpen;
 	JButton btnClear;
-	JButton btnSolve;
-	JButton btnFind;
+	JButton btnSolve1;
+	JButton btnSolve2;
 	JMenuItem mntmQuit;
 	JLabel lblInputCode;
 	JLabel lblEncodeTime;
@@ -66,11 +76,13 @@ public class MainFrame implements ActionListener {
 	public static JLabel lblNumOfClause;
 	JButton btnNewRandomGame;
 	JLabel lblSize;
-	
+	JButton btnOpen;
+	JComboBox comboBox;
+
 	private String filePathInput = "input/4x4/1.txt";
 	public static String cnfInput = "cnf/input.cnf";
 
-	// kich toc theo pixel
+	// kich thuoc theo pixel
 	int CANVAS_HEIGHT;
 	int CANVAS_WIDTH;
 
@@ -105,7 +117,7 @@ public class MainFrame implements ActionListener {
 
 		newGameFrame = new NewGameFrame();
 		frame = new JFrame();
-		frame.setBounds(100, 100, 600, 483);
+		frame.setBounds(100, 100, 730, 658);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -123,7 +135,7 @@ public class MainFrame implements ActionListener {
 
 		JPanel panel2 = new JPanel();
 		tabbedPane.addTab("     Sat4j     ", null, panel2, null);
-		panel2.setLayout(new GridLayout(1, 3));
+		panel2.setLayout(new GridLayout(1, 2));
 
 		JPanel panel = new JPanel();
 		panel2.add(panel);
@@ -189,19 +201,6 @@ public class MainFrame implements ActionListener {
 								GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE)
 						.addContainerGap()));
 		panel_1.setLayout(gl_panel_1);
-
-		JPanel panel_2 = new JPanel();
-		panel2.add(panel_2);
-		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
-		gl_panel_2.setHorizontalGroup(
-			gl_panel_2.createParallelGroup(Alignment.LEADING)
-				.addGap(0, 193, Short.MAX_VALUE)
-		);
-		gl_panel_2.setVerticalGroup(
-			gl_panel_2.createParallelGroup(Alignment.LEADING)
-				.addGap(0, 396, Short.MAX_VALUE)
-		);
-		panel_2.setLayout(gl_panel_2);
 		frame.getContentPane().setLayout(groupLayout);
 
 		JMenuBar menuBar = new JMenuBar();
@@ -211,13 +210,12 @@ public class MainFrame implements ActionListener {
 		menuBar.add(mnFile);
 
 		mntmNewGame = new JMenuItem("New game");
-		mntmNewGame.addActionListener(this);
+
 		mnFile.add(mntmNewGame);
 
 		mntmOpen = new JMenuItem("Open");
 		mnFile.add(mntmOpen);
-		mntmOpen.addActionListener(this);
-		
+
 		mntmQuit = new JMenuItem("Quit");
 		mnFile.add(mntmQuit);
 
@@ -234,6 +232,7 @@ public class MainFrame implements ActionListener {
 		mnAboutUs.add(mntmAbout);
 
 		myCanvas = new MyPanel(WIDTH, HEIGHT, val);
+		myCanvas.setBackground(Color.WHITE);
 		myCanvas.setLayout(new BorderLayout());
 
 		// Put the drawing area in a scroll pane.
@@ -245,6 +244,7 @@ public class MainFrame implements ActionListener {
 		panel1.add(p3, BorderLayout.EAST);
 
 		btnNewRandomGame = new JButton("New Puzzle");
+		btnNewRandomGame.setBackground(UIManager.getColor("Button.background"));
 		btnNewRandomGame.setToolTipText("Play a new random puzzle");
 
 		JLabel lblNewLabel = new JLabel("Size:");
@@ -261,148 +261,295 @@ public class MainFrame implements ActionListener {
 
 		btnClear = new JButton("Clear");
 		btnClear.setToolTipText("Clear game");
-		btnClear.addActionListener(this);
 
 		btnCheck = new JButton("Check");
 
-		btnSolve = new JButton("Solve");
+		btnSolve1 = new JButton("Multi\r\nSat");
 
-		btnFind = new JButton("Solve Now");
-		
+		btnSolve2 = new JButton("BitAddition\r\n");
+
 		JLabel label = new JLabel("Encode Time:");
-		
+
 		lblEncodeTime = new JLabel("--:--");
-		
+
 		JLabel label_2 = new JLabel("Solve Time:");
-		
+
 		lblSolveTime = new JLabel("--:--");
-		
+
 		JLabel label_4 = new JLabel("Total Time:");
-		
+
 		lblTotalTime = new JLabel("--:--");
-		
+
 		JLabel label_6 = new JLabel("Num of variable:");
-		
+
 		lblNumOfVariable = new JLabel("0");
-		
+
 		JLabel label_8 = new JLabel("Num of clause:");
-		
+
 		lblNumOfClause = new JLabel("0");
+
+		btnOpen = new JButton("Open");
+		btnOpen.setBackground(Color.GREEN);
+		btnOpen.setIcon(new ImageIcon(
+				MainFrame.class
+						.getResource("/javax/swing/plaf/metal/icons/ocean/directory.gif")));
+
+		comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] { "4x4", "5x5",
+				"6x6", "7x7", "8x8", "9x9", "10x10", "15x15", "20x20", "24x14",
+				"unsat" }));
 		GroupLayout gl_p3 = new GroupLayout(p3);
-		gl_p3.setHorizontalGroup(
-			gl_p3.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_p3.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_p3.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnNewRandomGame, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-						.addGroup(gl_p3.createSequentialGroup()
-							.addComponent(lblNewLabel)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblSize))
-						.addGroup(gl_p3.createSequentialGroup()
-							.addComponent(lblInputCode1)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblInputCode))
-						.addGroup(gl_p3.createSequentialGroup()
-							.addComponent(lblStatus1)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblStatus))
-						.addComponent(btnClear, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-						.addComponent(btnCheck, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-						.addComponent(btnSolve, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-						.addComponent(btnFind, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-						.addGroup(gl_p3.createSequentialGroup()
-							.addComponent(label, GroupLayout.PREFERRED_SIZE, 64, GroupLayout.PREFERRED_SIZE)
-							.addGap(6)
-							.addComponent(lblEncodeTime, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_p3.createSequentialGroup()
-							.addComponent(label_2, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
-							.addGap(6)
-							.addComponent(lblSolveTime, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_p3.createSequentialGroup()
-							.addComponent(label_4, GroupLayout.PREFERRED_SIZE, 53, GroupLayout.PREFERRED_SIZE)
-							.addGap(6)
-							.addComponent(lblTotalTime, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_p3.createSequentialGroup()
-							.addComponent(label_6, GroupLayout.PREFERRED_SIZE, 79, GroupLayout.PREFERRED_SIZE)
-							.addGap(6)
-							.addComponent(lblNumOfVariable, GroupLayout.PREFERRED_SIZE, 6, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_p3.createSequentialGroup()
-							.addComponent(label_8, GroupLayout.PREFERRED_SIZE, 71, GroupLayout.PREFERRED_SIZE)
-							.addGap(6)
-							.addComponent(lblNumOfClause, GroupLayout.PREFERRED_SIZE, 6, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap())
-		);
-		gl_p3.setVerticalGroup(
-			gl_p3.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_p3.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_p3.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblNewLabel)
-						.addComponent(lblSize))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_p3.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblInputCode1)
-						.addComponent(lblInputCode))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_p3.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblStatus1)
-						.addComponent(lblStatus))
-					.addGap(15)
-					.addComponent(btnNewRandomGame)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnClear)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnCheck)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnSolve)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnFind)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_p3.createParallelGroup(Alignment.LEADING)
-						.addComponent(label)
-						.addComponent(lblEncodeTime))
-					.addGap(18)
-					.addGroup(gl_p3.createParallelGroup(Alignment.LEADING)
-						.addComponent(label_2)
-						.addComponent(lblSolveTime))
-					.addGap(18)
-					.addGroup(gl_p3.createParallelGroup(Alignment.LEADING)
-						.addComponent(label_4)
-						.addComponent(lblTotalTime))
-					.addGap(18)
-					.addGroup(gl_p3.createParallelGroup(Alignment.LEADING)
-						.addComponent(label_6)
-						.addComponent(lblNumOfVariable))
-					.addGap(18)
-					.addGroup(gl_p3.createParallelGroup(Alignment.LEADING)
-						.addComponent(label_8)
-						.addComponent(lblNumOfClause))
-					.addContainerGap(320, Short.MAX_VALUE))
-		);
+		gl_p3.setHorizontalGroup(gl_p3
+				.createParallelGroup(Alignment.TRAILING)
+				.addGroup(
+						gl_p3.createSequentialGroup()
+								.addContainerGap()
+								.addGroup(
+										gl_p3.createParallelGroup(
+												Alignment.TRAILING)
+												.addGroup(
+														gl_p3.createSequentialGroup()
+																.addComponent(
+																		lblStatus1)
+																.addPreferredGap(
+																		ComponentPlacement.RELATED)
+																.addComponent(
+																		lblStatus))
+												.addGroup(
+														gl_p3.createSequentialGroup()
+																.addGroup(
+																		gl_p3.createParallelGroup(
+																				Alignment.TRAILING)
+																				.addComponent(
+																						label)
+																				.addComponent(
+																						label_8)
+																				.addComponent(
+																						label_6,
+																						GroupLayout.DEFAULT_SIZE,
+																						GroupLayout.DEFAULT_SIZE,
+																						Short.MAX_VALUE)
+																				.addComponent(
+																						label_4)
+																				.addComponent(
+																						label_2)
+																				.addGroup(
+																						gl_p3.createParallelGroup(
+																								Alignment.LEADING,
+																								false)
+																								.addComponent(
+																										btnNewRandomGame,
+																										Alignment.TRAILING,
+																										0,
+																										0,
+																										Short.MAX_VALUE)
+																								.addComponent(
+																										btnSolve1,
+																										Alignment.TRAILING,
+																										GroupLayout.DEFAULT_SIZE,
+																										GroupLayout.DEFAULT_SIZE,
+																										Short.MAX_VALUE)
+																								.addComponent(
+																										btnClear,
+																										Alignment.TRAILING,
+																										GroupLayout.DEFAULT_SIZE,
+																										70,
+																										Short.MAX_VALUE)))
+																.addGap(6)
+																.addGroup(
+																		gl_p3.createParallelGroup(
+																				Alignment.TRAILING)
+																				.addComponent(
+																						btnCheck,
+																						GroupLayout.PREFERRED_SIZE,
+																						70,
+																						GroupLayout.PREFERRED_SIZE)
+																				.addGroup(
+																						gl_p3.createSequentialGroup()
+																								.addComponent(
+																										lblInputCode1)
+																								.addPreferredGap(
+																										ComponentPlacement.RELATED)
+																								.addComponent(
+																										lblInputCode))
+																				.addGroup(
+																						gl_p3.createSequentialGroup()
+																								.addComponent(
+																										lblNewLabel)
+																								.addPreferredGap(
+																										ComponentPlacement.RELATED)
+																								.addComponent(
+																										lblSize))
+																				.addComponent(
+																						btnOpen,
+																						GroupLayout.PREFERRED_SIZE,
+																						70,
+																						GroupLayout.PREFERRED_SIZE)
+																				.addComponent(
+																						lblEncodeTime,
+																						GroupLayout.DEFAULT_SIZE,
+																						73,
+																						Short.MAX_VALUE)
+																				.addComponent(
+																						lblSolveTime,
+																						GroupLayout.DEFAULT_SIZE,
+																						73,
+																						Short.MAX_VALUE)
+																				.addComponent(
+																						lblNumOfVariable,
+																						GroupLayout.DEFAULT_SIZE,
+																						73,
+																						Short.MAX_VALUE)
+																				.addComponent(
+																						lblTotalTime,
+																						GroupLayout.DEFAULT_SIZE,
+																						73,
+																						Short.MAX_VALUE)
+																				.addComponent(
+																						lblNumOfClause,
+																						GroupLayout.DEFAULT_SIZE,
+																						73,
+																						Short.MAX_VALUE)
+																				.addComponent(
+																						btnSolve2,
+																						GroupLayout.PREFERRED_SIZE,
+																						70,
+																						GroupLayout.PREFERRED_SIZE)))
+												.addComponent(
+														comboBox,
+														GroupLayout.PREFERRED_SIZE,
+														83,
+														GroupLayout.PREFERRED_SIZE))
+								.addContainerGap()));
+		gl_p3.setVerticalGroup(gl_p3
+				.createParallelGroup(Alignment.LEADING)
+				.addGroup(
+						gl_p3.createSequentialGroup()
+								.addGap(16)
+								.addGroup(
+										gl_p3.createParallelGroup(
+												Alignment.BASELINE)
+												.addComponent(lblSize)
+												.addComponent(
+														lblNewLabel,
+														GroupLayout.PREFERRED_SIZE,
+														16,
+														GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(
+										gl_p3.createParallelGroup(
+												Alignment.BASELINE)
+												.addComponent(lblInputCode)
+												.addComponent(lblInputCode1))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(
+										gl_p3.createParallelGroup(
+												Alignment.BASELINE)
+												.addComponent(lblStatus)
+												.addComponent(lblStatus1))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(comboBox,
+										GroupLayout.PREFERRED_SIZE,
+										GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(
+										gl_p3.createParallelGroup(
+												Alignment.BASELINE)
+												.addComponent(
+														btnOpen,
+														GroupLayout.PREFERRED_SIZE,
+														70,
+														GroupLayout.PREFERRED_SIZE)
+												.addComponent(
+														btnNewRandomGame,
+														GroupLayout.PREFERRED_SIZE,
+														70,
+														GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(
+										gl_p3.createParallelGroup(
+												Alignment.BASELINE)
+												.addComponent(
+														btnCheck,
+														GroupLayout.PREFERRED_SIZE,
+														70,
+														GroupLayout.PREFERRED_SIZE)
+												.addComponent(
+														btnClear,
+														GroupLayout.PREFERRED_SIZE,
+														70,
+														GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(
+										gl_p3.createParallelGroup(
+												Alignment.BASELINE)
+												.addComponent(
+														btnSolve2,
+														GroupLayout.PREFERRED_SIZE,
+														70,
+														GroupLayout.PREFERRED_SIZE)
+												.addComponent(
+														btnSolve1,
+														GroupLayout.PREFERRED_SIZE,
+														70,
+														GroupLayout.PREFERRED_SIZE))
+								.addGap(12)
+								.addGroup(
+										gl_p3.createParallelGroup(
+												Alignment.BASELINE)
+												.addComponent(lblEncodeTime)
+												.addComponent(label))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(
+										gl_p3.createParallelGroup(
+												Alignment.BASELINE)
+												.addComponent(lblSolveTime)
+												.addComponent(label_2))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(
+										gl_p3.createParallelGroup(
+												Alignment.BASELINE)
+												.addComponent(lblTotalTime)
+												.addComponent(label_4))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(
+										gl_p3.createParallelGroup(
+												Alignment.BASELINE)
+												.addComponent(lblNumOfVariable)
+												.addComponent(label_6))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(
+										gl_p3.createParallelGroup(
+												Alignment.BASELINE)
+												.addComponent(lblNumOfClause)
+												.addComponent(label_8))
+								.addGap(118)));
 
 		p3.setLayout(gl_p3);
 
-		
-		
+		mntmNewGame.addActionListener(this);
+		mntmOpen.addActionListener(this);
+		btnClear.addActionListener(this);
+		btnOpen.addActionListener(this);
+
 		btCancel = new JButton("Cancel");
-//		timerLabel = new JLabel("0");
+		// timerLabel = new JLabel("0");
 		loadingDialog = new JDialog(frame, "Progress Dialog", true);
-        JProgressBar dpb = new JProgressBar(0, 100);
-//        loadingDialog.add(BorderLayout.NORTH,timerLabel);
-        loadingDialog.getContentPane().add(BorderLayout.CENTER, dpb);
-        loadingDialog.getContentPane().add(BorderLayout.SOUTH,btCancel);
-        loadingDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dpb.setIndeterminate(true);
-        loadingDialog.setSize(200, 80);
-        loadingDialog.setLocationRelativeTo(frame);
+		JProgressBar dpb = new JProgressBar(0, 100);
+		// loadingDialog.add(BorderLayout.NORTH,timerLabel);
+		loadingDialog.getContentPane().add(BorderLayout.CENTER, dpb);
+		loadingDialog.getContentPane().add(BorderLayout.SOUTH, btCancel);
+		loadingDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		dpb.setIndeterminate(true);
+		loadingDialog.setSize(200, 80);
+		loadingDialog.setLocationRelativeTo(frame);
 
 		btCancel.addActionListener(this);
 		btnCheck.addActionListener(this);
-		
-		btnSolve.addActionListener(this);
-		btnFind.addActionListener(this);
+
+		btnSolve1.addActionListener(this);
+		btnSolve2.addActionListener(this);
 		mntmQuit.addActionListener(this);
 		newGameFrame.btnOk.addActionListener(this);
 		newGameFrame.btnCancel.addActionListener(this);
@@ -439,7 +586,6 @@ public class MainFrame implements ActionListener {
 		CANVAS_WIDTH = (WIDTH + 2) * SIZE_BOX;
 
 	}
-
 
 	// public void solveNext() {
 	// writeInput = new WriteInput(val);
@@ -479,93 +625,84 @@ public class MainFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource()==btnCheck){
-		}
-		else if(e.getSource()==newGameFrame.btnCancel){
+		if (e.getSource() == btnCheck) {
+		} else if (e.getSource() == newGameFrame.btnCancel) {
 			newGameFrame.setVisible(false);
-		}
-		else if(e.getSource()==newGameFrame.btnOk){
-			int random= (new Random()).nextInt(10)+1;
-			filePathInput = "input/"+newGameFrame.comboBox.getSelectedItem()+"/"+random+".txt";
-			lblInputCode.setText(random+"");
-			lblSize.setText(newGameFrame.comboBox.getSelectedItem()+"");
+		} else if (e.getSource() == newGameFrame.btnOk) {
+
+		} else if (e.getSource() == btnOpen) {
+			JFileChooser fc = new JFileChooser();
+			int returnVal = fc.showOpenDialog(this.frame);
+
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File file = fc.getSelectedFile();
+				file.getName().lastIndexOf(".");
+				if (file.getName()
+						.substring(file.getName().lastIndexOf(".") + 1,
+								file.getName().length()).equals("txt")) {
+					filePathInput = file.getPath();
+					readInputFile();
+					myCanvas.init(WIDTH, HEIGHT, val);
+					myCanvas.repaint();
+				} else {
+					JOptionPane.showMessageDialog(frame, "Wrong file!");
+				}
+			}
+		} else if (e.getSource() == btnNewRandomGame) {
+			// newGameFrame.setVisible(true);
+			int random = (new Random()).nextInt(10) + 1;
+			filePathInput = "input/" + comboBox.getSelectedItem() + "/"
+					+ random + ".txt";
+			lblInputCode.setText(String.valueOf(random));
+			lblSize.setText(String.valueOf(newGameFrame.comboBox
+					.getSelectedItem()));
 			System.out.println(filePathInput);
 			readInputFile();
 			myCanvas.init(WIDTH, HEIGHT, val);
 			myCanvas.repaint();
 			newGameFrame.setVisible(false);
-		}
-		else if(e.getSource()==btnNewRandomGame){
-			newGameFrame.setVisible(true);
-			
-		}
-		else if(e.getSource()==btnFind){
+		} else if (e.getSource() == btnSolve1) {
 			long start = System.currentTimeMillis();
-			solveThread = new SolveThread(loadingDialog,val,myCanvas,start,lblTotalTime,lblStatus);
-			solveThread.execute();
+			solve1Thread = new Solve1Thread(loadingDialog, val, myCanvas,
+					start,lblEncodeTime,lblSolveTime, lblTotalTime, lblStatus);
+			solve1Thread.execute();
 			loadingDialog.setVisible(true);
-		}
-		else if(e.getSource()==btnSolve){
-			writeInput = new WriteInput(val);
-			Long beforeEncode = System.currentTimeMillis();
-			writeInput.writeToFile(cnfInput);
-			Long afterEncode = System.currentTimeMillis();
-			float encodeTime = ((float) (afterEncode - beforeEncode)) / 1000;
-			lblEncodeTime.setText("" + encodeTime);
-			// System.out.println("encode Time:"+encodeTime);
-
-			Long beforeSolve = System.currentTimeMillis();
-			satSolver = new SatSolver();
-			Long afterSolve = System.currentTimeMillis();
-			float solveTime = ((float) (afterSolve - beforeSolve)) / 1000;
-			lblSolveTime.setText("" + solveTime);
-			// System.out.println("solve Time:" +solveTime);
-			lblTotalTime.setText("" + (solveTime + encodeTime));
-
-			String[] stringDecoded = satSolver.getString().split(" ");
-			myCanvas.repaintCanvas(stringDecoded);
-		}
-		else if(e.getSource()==btnClear){
-			myCanvas.clearArray(myCanvas.colDown, HEIGHT, WIDTH+1);
-			myCanvas.clearArray(myCanvas.colUp, HEIGHT, WIDTH+1);
-			myCanvas.clearArray(myCanvas.rowLeft, HEIGHT+1, WIDTH);
-			myCanvas.clearArray(myCanvas.rowRight, HEIGHT+1,WIDTH);
+		} else if (e.getSource() == btnSolve2) {
+			long start = System.currentTimeMillis();
+			solve2Thread = new Solve2Thread(loadingDialog, val, myCanvas,
+					start,lblEncodeTime,lblSolveTime, lblTotalTime, lblStatus);
+			solve2Thread.execute();
+			loadingDialog.setVisible(true);
+		} else if (e.getSource() == btnClear) {
+			myCanvas.clearArray(myCanvas.colDown, HEIGHT, WIDTH + 1);
+			myCanvas.clearArray(myCanvas.colUp, HEIGHT, WIDTH + 1);
+			myCanvas.clearArray(myCanvas.rowLeft, HEIGHT + 1, WIDTH);
+			myCanvas.clearArray(myCanvas.rowRight, HEIGHT + 1, WIDTH);
 			myCanvas.repaint();
-		}
-		else if(e.getSource()==btCancel){
-			try{
-				solveThread.cancel(true);
-				}catch(CancellationException ex){
+		} else if (e.getSource() == btCancel) {
+			if (!solve1Thread.isDone()) {
+				try {
+					solve1Thread.cancel(true);
+				} catch (CancellationException ex) {
 					System.out.println(ex.getMessage());
 				}
-		}
-		else if(e.getSource()==mntmNewGame){
+			} else if (!solve2Thread.isDone()) {
+				try {
+					solve2Thread.cancel(true);
+				} catch (CancellationException ex) {
+					System.out.println(ex.getMessage());
+				}
+			}
+		} else if (e.getSource() == mntmNewGame) {
 			newGameFrame.setVisible(true);
-		}
-		else if(e.getSource()==mntmOpen){
-			JFileChooser fc = new JFileChooser();
-			int returnVal = fc.showOpenDialog(this.frame);
+		} else if (e.getSource() == mntmOpen) {
 
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File file = fc.getSelectedFile();
-                file.getName().lastIndexOf(".");
-                if(file.getName().substring(file.getName().lastIndexOf(".")+1, file.getName().length()).equals("txt")){
-                	filePathInput=file.getPath();
-                	readInputFile();
-                	myCanvas.init(WIDTH, HEIGHT, val);
-                	myCanvas.repaint();
-                }
-                else{
-                	JOptionPane.showMessageDialog(frame, "Wrong file!");
-                }
-            }
-		}
-		else if(e.getSource() == mntmQuit){
+		} else if (e.getSource() == mntmQuit) {
 			System.exit(0);
 		}
-		
-		else if(e.getSource()==newGameFrame.btnOk){
-			
+
+		else if (e.getSource() == newGameFrame.btnOk) {
+
 		}
 	}
 }
