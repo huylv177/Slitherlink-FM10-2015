@@ -70,7 +70,7 @@ public class MainFrame implements ActionListener {
 	private String filePathInput = "input/4x4/1.txt";
 	public static String cnfInput = "cnf/input.cnf";
 
-	// kich thuoc theo pixel
+	// kich toc theo pixel
 	int CANVAS_HEIGHT;
 	int CANVAS_WIDTH;
 
