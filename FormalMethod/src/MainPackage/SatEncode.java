@@ -40,8 +40,8 @@ public class SatEncode {
 	
 	// ---------------------------------------------//
 	// Tính số bit cần để mã hóa mỗi đỉnh dựa trên kích thước của trò chơi//
-	private int bitNumber(int h,int w) {
-		int bit = 5;
+	public int bitNumber(int h, int w) {
+		int bit = 2;
 		int mn = (h + 1) * (w + 1);
 		while (Math.pow(2, bit) - 1 < mn) {
 			bit++;

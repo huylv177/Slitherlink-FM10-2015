@@ -49,14 +49,13 @@ public class Solve2Thread extends SwingWorker<String[], Void>{
 		encodeMoment = System.currentTimeMillis();
 		writeInput.writeToFile(cnfInput);
 		satSolver = new SatSolver();
-		solveMoment = System.currentTimeMillis();
 		if(satSolver.getRESULT_CODE()==1){
+			solveMoment = System.currentTimeMillis();
 			String[] stringDecoded = satSolver.getString().split(" ");
 			return stringDecoded;
 		}
-		else{
-			return null;
-		}
+		else return null;
+		
 	}
 	@Override
 	protected void done() {

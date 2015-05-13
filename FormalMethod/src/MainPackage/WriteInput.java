@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.BitSet;
 
 import Swing.MainFrame;
 
@@ -14,20 +13,19 @@ public class WriteInput {
 	private SatEncode satEncode;
 	private int w;
 	private int h;
-	private int encodeMethod;
 	private int _bitNumber;
+	private int encodeMethod;
 	public WriteInput(int[][] val,int encodeMethod){
 		w= MainFrame.WIDTH;
 		h= MainFrame.HEIGHT;
-		satEncode = new SatEncode(val);
 		this.encodeMethod=encodeMethod;
-		
+		_bitNumber =bitNumber(h, w);
+		satEncode = new SatEncode(val);
 		if(encodeMethod==1){
 			satEncode.encode1();
 		}else if(encodeMethod==2){
 			satEncode.encode2();
 		}
-		_bitNumber=bitNumber(h, w);
 		
 		stringEncoded = satEncode.getTextEncoded();
 	}
@@ -44,11 +42,11 @@ public class WriteInput {
 			bw.write("p cnf "+(4*w*h+2*w+2*h)+" "+stringEncoded.size());
 			if(encodeMethod==1){
 				MainFrame.lblNumOfVariable.setText(String.valueOf(4*w*h+2*w+2*h));
-			}else{
-				MainFrame.lblNumOfVariable.setText(String.valueOf(4*w*h+2*w+2*h + (h+1)*(w+1)*2*_bitNumber));
 			}
-			
-			MainFrame.lblNumOfClause.setText(String.valueOf(stringEncoded.size()));
+			else{
+				MainFrame.lblNumOfVariable.setText(String.valueOf(4*w*h+2*w+2*h +(h+1)*(w+1)*2*_bitNumber) );
+			}
+			MainFrame.lblNumOfClause.setText(stringEncoded.size()+"");
 			MainFrame.textPaneInput.setText("p cnf "+(4*w*h+2*w+2*h)+" "+stringEncoded.size()+"\n");
 			
 			bw.newLine();
@@ -73,7 +71,7 @@ public class WriteInput {
 		}
 		stringEncoded.add(tempString);
 	}
-	private int bitNumber(int h,int w) {
+	public int bitNumber(int h, int w) {
 		int bit = 5;
 		int mn = (h + 1) * (w + 1);
 		while (Math.pow(2, bit) - 1 < mn) {
