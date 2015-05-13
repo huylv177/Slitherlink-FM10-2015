@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ public class MyPanel extends JPanel implements MouseListener {
 	// (cp[i][0],cp[i][1]) la toa do cua canh (cp[i][2],cp[i][3],cp[i][4])
 	int[][] cp;
 
+	Image img;
+	
 	public MyPanel(int w, int h, int[][] val) {
 		init(w,h,val);
 		addMouseListener(this);
@@ -44,7 +48,7 @@ public class MyPanel extends JPanel implements MouseListener {
 		colDown = new boolean[h][w + 1];
 
 		SIZE_BOX = MainFrame.SIZE_BOX;
-
+		img = Toolkit.getDefaultToolkit().createImage("s.jpg");
 //		setPreferredSize(new Dimension((w+2)*SIZE_BOX,(h+2)*SIZE_BOX));
 //		setBackground(Color.cyan);
 	}
@@ -68,6 +72,7 @@ public class MyPanel extends JPanel implements MouseListener {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		g.drawImage(img,0,0,this);
 		setPreferredSize(new Dimension((w+2)*SIZE_BOX,(h+2)*SIZE_BOX));
 		// ve cac diem
 		for (int i = 0; i < w + 1; i++) {
@@ -208,8 +213,8 @@ public class MyPanel extends JPanel implements MouseListener {
 	}
 	public void repaintCanvas(String[] stringDecoded) {
 
-		clearArray(colDown, w, h + 1);
-		clearArray(rowRight, w + 1, w);
+		clearArray(colDown, h, w+1);
+		clearArray(rowRight, h+1, w);
 
 		// doc output, chuyen String thanh array int,
 		ArrayList<Integer> b = new ArrayList<Integer>();
@@ -222,7 +227,7 @@ public class MyPanel extends JPanel implements MouseListener {
 			
 			if (b.get(i) == edgeCode) {
 				int[] temp = decodeEdge(edgeCode);
-//				 if(edgeCode==3) System.out.println(temp[0] +" "+temp[1]+" "+temp[2]);
+//				System.out.println(edgeCode+" "+temp[0] +" "+temp[1]+" "+temp[2]);
 
 				if (temp[2] == 0) {
 					rowRight[temp[0]][temp[1]] = true;
@@ -252,24 +257,24 @@ public class MyPanel extends JPanel implements MouseListener {
 			edgeCode -= d;
 		}
 		if (edgeCode <= k) {
-			if (edgeCode % h == 0) {
-				e[0] = edgeCode / h - 1;
-				e[1] = h - 1;
+			if (edgeCode % w == 0) {
+				e[0] = edgeCode / w - 1;
+				e[1] = w - 1;
 				e[2] = 0;
 			} else {
-				e[0] = edgeCode / h;
-				e[1] = edgeCode % h - 1;
+				e[0] = edgeCode / w;
+				e[1] = edgeCode % w - 1;
 				e[2] = 0;
 			}
 		} else {
 			edgeCode = edgeCode - k;
-			if ((edgeCode % (h + 1)) == 0) {
-				e[0] = edgeCode / (h + 1) - 1;
-				e[1] = h;
+			if ((edgeCode % (w + 1)) == 0) {
+				e[0] = edgeCode / (w + 1) - 1;
+				e[1] = w;
 				e[2] = 1;
 			} else {
-				e[0] = edgeCode / (h + 1);
-				e[1] = edgeCode % (h + 1) - 1;
+				e[0] = edgeCode / (w + 1);
+				e[1] = edgeCode % (w + 1) - 1;
 				e[2] = 1;
 			}
 		}
